@@ -99,6 +99,10 @@ which is a plot of the sample autocorrelation at $r_k$ against the lag
 $k$.
 
 
+### Exercises
+
+<h4> Exercises </h4>
+
 #### Exercise 4.1
 
 Using the function ``acf()``, calculate the autocorrelations for

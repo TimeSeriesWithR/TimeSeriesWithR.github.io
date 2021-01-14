@@ -37,6 +37,11 @@ biasing any predicted values for the time series.
 Various methods are used for estimating the trend, such as taking a
 \emph{moving average} of the values, which is a common approach.
 
+
+### Exercises 
+
+<h4> Exercises </h4>
+
 #### Worked Exercise 3.1
 
 Using the ``decompose()`` function in R, look at the trend and

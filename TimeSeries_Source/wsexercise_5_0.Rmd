@@ -33,6 +33,9 @@ the \emph{cross-correlation function (ccf)},
 Note that the above functions are not symmetric, as the lag is always on the first variable, $x$.
 
 <p>
+
+### Exercises
+<h4> Basic Forecasting - Exercises </h4>
 #### Worksheet Exercise 5.1
 
 Load the building approvals and activity data from the ``ApprovActiv.dat`` file. 
