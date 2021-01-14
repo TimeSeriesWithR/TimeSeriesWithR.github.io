@@ -1,0 +1,34 @@
+
+#### Worksheet Exercise 1.5
+
+Calculate the average monthly data for each of the above time
+series. Compare this to the actual monthly data and plot them
+together. What can we learn from this?
+
+
+
+```{r}
+MA.year.ts        <- aggregate(MA.month.ts);
+MA.annual.mean.ts <- MA.year.ts / 12;
+```
+
+```{r}
+
+layout(1:2)
+plot(MA.month.ts,       ylab = "unemployed (%)")
+plot(MA.annual.mean.ts, ylab = "unemployed (%)")
+
+```
+
+```{r}
+### We can also plot this in ggplot2
+MA.month.vec       <- as.vector(MA.month.ts);
+MA.annual.mean.vec <- as.vector(MA.annual.mean.ts);
+```
+
+```{r}
+
+qplot(1:length(MA.month.vec), MA.month.vec, geom = 'line', colour = I('red')) +
+    geom_line(aes(x = -6 + (1:length(MA.annual.mean.vec)) * 12, y = MA.annual.mean.vec), colour = 'blue');
+```
+

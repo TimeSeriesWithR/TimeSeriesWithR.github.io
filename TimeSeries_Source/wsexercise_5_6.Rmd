@@ -1,0 +1,25 @@
+
+#### Worksheet Exercise 5.6
+
+
+```{r}
+Complaints.hw2 <- HoltWinters(Complaints.ts, alpha = 0.2, beta = FALSE, gamma = FALSE);
+
+print(Complaints.hw2);
+plot(Complaints.hw2);
+
+```
+
+```{r}
+Complaints.hw3 <- HoltWinters(Complaints.ts, alpha = 0.9, beta = FALSE, gamma = FALSE);
+
+print(Complaints.hw3);
+plot(Complaints.hw3);
+```
+
+```{r}
+layout(1:3);
+plot(Complaints.hw1);
+plot(Complaints.hw2);
+plot(Complaints.hw3);
+```

@@ -1,0 +1,16 @@
+
+#### Worksheet Exercise 3.3
+
+
+Try a multiplicative model for all of the above. ``decompose()``
+allows the selection of this via the ```type}' parameter. Is the
+multiplicative model better? In either case, explain why this might be.
+
+
+
+```{r}
+
+AP.ts.mult.decomp <- decompose(AP.ts, type = 'multiplicative');
+
+plot(AP.ts.mult.decomp);
+```

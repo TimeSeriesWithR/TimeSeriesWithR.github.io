@@ -1,0 +1,26 @@
+
+### Storage Modes
+
+#### Nile 
+
+Let us look at the Nile data set, one of R’s embedded data set.
+
+```{r}
+Nile
+```
+
+```{r}
+class(Nile)
+```
+
+```{r}
+str(Nile)
+```
+
+```{r}
+mode(Nile)
+```
+
+```{r}
+head(Nile)
+```

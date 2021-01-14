@@ -1,0 +1,14 @@
+
+#### CBE Data 
+
+```{r}
+head(CBE.df)
+```
+
+```{r}
+tail(CBE.df)
+```
+
+```{r}
+str(CBE.df)
+```

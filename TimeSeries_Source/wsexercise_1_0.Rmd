@@ -1,0 +1,67 @@
+Visualizating a Time Series {data-navmenu="Exercises"}
+===================================================
+
+Column {.tabset}
+---------------------------------
+
+### Visualizating a Time Series
+
+
+Before we get to any of that though, and before we try to build any
+kind of models for the data, we always start with visualising the
+data. Often, a simple plot of the data helps use pick out aspects to
+analyse and incorporate into the models. For time series, one of the
+first things to do is the \emph{time plot}, a simple plot of the data
+over time.
+
+For the passenger data, a few aspects stand out that are very common
+in time series. It is apparent that the numbers increase over time,
+and this systematic change in the data is called the
+\emph{trend}. Often, approximating the trend as a linear function of
+time is adequate for many data sets.
+
+A repeating pattern in the data that occurs over the period of the
+data (in this case, each year), is called the
+\emph{seasonal variation}, though a more general concept of `season'
+is implied --- it often will not coincide with the seasons of the
+calendar.
+
+A slightly more generalised concept from the seasonality is that of
+\emph{cycles}, repeating patterns in the data that do not correspond
+to the natural fixed periods of the model. None of these are apparent
+in the air passenger data, and accounting for them are beyond the
+scope of this introductory tutorial.
+
+Finally, another important benefit of visualising the data is that it
+helps identify possible \emph{outliers} and \emph{erroneous} data.
+
+<p>
+#### Worked Exercise 1.1
+Load the air passengers data into your workspace and investigate the
+structure of the ``ts} object using ``str()``. How is a
+``ts`` object different from a standard vector in R? Plot it
+using the default \text{plot} method.
+<p>
+#### Worked Exercise 1.2
+Using the data supplied in the file ``Maine.dat} and the
+function ``read.table()``, load the Maine unemployment data into
+your workspace and repeat the tasks above.
+<p>
+#### Worked Exercise 1.3
+Analyse the trend and seasonality for the air passenger data by using
+the ``aggregate()`` and ``cycle()`` functions. Create a
+boxplot for the data, segmenting the data by month.
+<p>
+#### Worked Exercise 1.4
+Repeat the above analysis for Maine unemployment data.
+<p>
+#### Worked Exercise 1.5
+Calculate the average monthly data for each of the above time
+series. Compare this to the actual monthly data and plot them
+together. What can we learn from this?
+<p>
+#### Worked Exercise 1.6
+Using the ``window()`` function, calculate quantitative values
+for the above.
+
+### Solutions

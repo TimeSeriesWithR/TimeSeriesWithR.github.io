@@ -1,0 +1,27 @@
+
+#### Airline Passengers
+
+```{r}
+elec.ts    <- ts(CBE.df$elec, start = 1958, freq = 12);
+AP.elec.ts <- ts.intersect(AP.ts, elec.ts);
+```
+
+```{r}
+head(AP.elec.ts); tail(AP.elec.ts);
+
+```
+
+```{r}
+str(AP.elec.ts);
+```
+
+```{r}
+plot(AP.elec.ts);
+```
+
+
+#### Create a plot in ggplot2
+
+```{r}
+qplot(Var1, value, data = melt(AP.elec.ts), geom = 'line', colour = Var2);
+```

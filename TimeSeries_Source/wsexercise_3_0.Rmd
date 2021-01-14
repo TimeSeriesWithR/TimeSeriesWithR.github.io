@@ -1,0 +1,62 @@
+Time Series Decomposition {data-navmenu="Exercises"}
+===================================================
+
+Column {.tabset}
+---------------------------------
+
+### Time Series Decomposition
+
+Since many time series are dominated by trends or seasonal effects,
+and we can create fairly simple models based on these two
+components. The first of these, the
+\emph{additive decompositional model}, is just the sum of these
+effects, with the residual component being treated as random:
+
+\[
+x_t = m_t + s_t + z_t,
+\]
+
+
+where, at any given time $t$, $x_t$ is the observed value, $m_t$ is
+trend, $s_t$ is the seasonal component, and $z_t$ is the error term.
+
+It is worth noting that, in general, the error terms will be a
+correlated sequence of values, something we will account for and model
+later.
+
+In other cases, we could have a situation where the seasonal effect
+increases as the trend increases, modeling the values as:
+
+\[
+x_t = m_t s_t + z_t.
+\]
+
+Other options also exist, such as modeling the log of the observed values, which does cause some non-trivial modeling issues, such as
+biasing any predicted values for the time series.
+
+Various methods are used for estimating the trend, such as taking a
+\emph{moving average} of the values, which is a common approach.
+
+#### Worked Exercise 3.1
+
+Using the ``decompose()`` function in R, look at the trend and
+the seasonal variation for the airline passenger data. The output of
+this function can be plotted directly, and visually check the
+output. Does the output match your intuition about what you observed?
+
+#### Worked Exercise 3.2
+
+Repeat this process for the CBE dataset.
+
+#### Worked Exercise 3.3
+
+Try a multiplicative model for all of the above. ``decompose()``
+allows the selection of this via the ```type}' parameter. Is the
+multiplicative model better? In either case, explain why this might be.
+
+#### Worked Exercise 3.4
+
+Repeat the above, but use the ``stl()`` R function instead of
+``decompose()``. Compare the output of the two.
+
+### Solutions 

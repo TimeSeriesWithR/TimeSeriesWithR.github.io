@@ -1,0 +1,154 @@
+---
+title: "Time Series Analysis with R"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: united
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(reshape2)
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+
+data(AirPassengers);
+
+AP.ts       <- AirPassengers;
+MA.month.df <- read.table('datasets/Maine.dat', header = TRUE);
+MA.month.ts <- ts(MA.month.df$unemploy, start = c(1996, 1), freq = 12)
+
+CBE.df      <- read.table('datasets/cbe.dat',         header = TRUE);
+AA.df       <- read.table('datasets/ApprovActiv.dat', header = TRUE);
+motororg.df <- read.table('datasets/motororg.dat',    header = TRUE);
+
+# source("TimeSeries_Source/setup_data.R")
+
+```
+
+
+
+
+```{r child="TimeSeries_Source/Intro_text_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_0.Rmd"}
+```
+
+
+```{r child="TimeSeries_Source/wsexercise_1_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_2.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_3.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_4.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_5.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_1_6.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_2_0.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_2_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_2_2.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_2_3.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_2_4.Rmd"}
+```
+
+   
+
+
+
+
+```{r child="TimeSeries_Source/wsexercise_3_0.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_3_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_3_2.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_3_3.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_3_4.Rmd"}
+```
+
+
+```{r child="TimeSeries_Source/wsexercise_4_0.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_4_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_4_2.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_4_3.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_4_4.Rmd"}
+```
+
+
+```{r child="TimeSeries_Source/wsexercise_5_0.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_1.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_2.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_3.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_4.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_5.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_6.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_7.Rmd"}
+```
+
+```{r child="TimeSeries_Source/wsexercise_5_8.Rmd"}
+```
+
+
+```{r child="TimeSeries_Source/wsexercise_7_0.Rmd"}
+```
+
+
+Development
+==================================
+Column {.tabset}
+----------------------------
+
+
+```{r child="TimeSeries_Source/storage_modes.Rmd"}
+```
+
+
+```{r child="TimeSeries_Source/Examples.Rmd"}
+```

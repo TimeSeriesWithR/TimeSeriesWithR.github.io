@@ -1,0 +1,18 @@
+
+#### Worksheet Exercise 3.1
+
+Using the ``decompose()`` function in R, look at the trend and
+the seasonal variation for the airline passenger data. The output of
+this function can be plotted directly, and visually check the
+output. Does the output match your intuition about what you observed?
+
+```{r}
+AP.ts.decomp <- decompose(AP.ts);
+
+str(AP.ts.decomp);
+```
+
+```{r}
+
+plot(AP.ts.decomp);
+```

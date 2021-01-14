@@ -1,0 +1,10 @@
+
+#### Worksheet Exercise 4.1
+
+
+```{r}
+
+AP.ts.acf <- acf(AP.ts, plot = FALSE);
+
+str(AP.ts.acf);
+```

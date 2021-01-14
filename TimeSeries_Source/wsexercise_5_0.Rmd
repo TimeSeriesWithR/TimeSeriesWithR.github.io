@@ -1,0 +1,119 @@
+
+Basic Forecasting {data-navmenu="Exercises"}
+===================================================
+
+Column {.tabset}
+---------------------------------
+
+### Basic Forecasting
+
+
+
+<h4> Basic Forecasting </h4>
+
+
+As mentioned earlier, an efficient way to forecast a variable is to
+find a related variable whose value leads it by one or more
+timesteps. The closer the relationship and the longer the lead time,
+the better it becomes.
+
+<p> 
+The trick, of course, is to find a leading variable.
+
+<p> 
+Multivariate series has a temporal equivalent to correlation and covariance, known as the *cross-covariance function (ccvf)* and
+the \emph{cross-correlation function (ccf)},
+
+\begin{eqnarray}
+\gamma_k(x, y) &=& E[(x_{t+k} - \mu_x)(y_t - \mu_y)], \\
+\rho_k(x, y)   &=& \frac{\gamma_k(x, y)}{\sigma_x \sigma_y}.
+\end{eqnarray}
+
+
+Note that the above functions are not symmetric, as the lag is always on the first variable, $x$.
+
+<p>
+#### Worksheet Exercise 5.1
+
+Load the building approvals and activity data from the ``ApprovActiv.dat`` file. 
+The data is quarterly and starts in 1996. 
+Determine which is the leading variable and investigate the relationship between the two.
+
+<p>
+#### Worksheet Exercise 5.2
+
+Binding the time-series using ``ts.union()``, find the cross-correlations for the building data.
+<p>
+Is the relationship symmetric, and why?
+
+
+<p>
+#### Worksheet Exercise 5.3
+Examine the cross-correlations of the random element of the decomposed time-series for the building data, and compare this to the original
+cross-correlations.
+
+
+### Exponentially-weighted moving average (EWMA)
+
+Our main objective in forecasting is to estimate the value of a future
+quantity, $x_{n+k}$, given past values ${x_1, x_2, ..., x_n}$. We assume no seasonal or trend effects, or any such effects have been
+removed from the data. We assume that the underlying mean of the data is $\mu_t$, and that this value changes from timestep to timestep, but
+this change is random.
+
+Our model can be expressed as
+
+\begin{equation}
+x_t = \mu_t + w_t,
+\end{equation}
+
+
+where $\mu_t$ is the non-stationary mean of the process at time $t$ and $w_t$ are independent random variates with mean $0$ and standard deviation $\sigma$. 
+We let $a_t$ be our estimate of $\mu_t$, and can define the ***exponentially-weighted moving average (EWMA)***, $a_t$ to be
+
+\begin{equation}
+a_t = \alpha x_t + (1 - \alpha) a_{t-1}, \;\;\; 0 \leq \alpha \leq 1.
+\end{equation}
+
+
+The value of $\alpha$ controls the amount of smoothing, as is referred to as the ***smoothing parameter***.
+
+<p>
+#### Worksheet Exercise 5.4
+Load the data in the ``motororg.dat`` file. 
+This is a count of complaints received on a monthly basis by a motoring organisation from 1996 to 1999. Create an appropriate time series from this data. 
+Plot the data, checking it for trends or seasonality.
+
+<p>
+#### Worksheet Exercise 5.5
+Using the function ``HoltWinters()``, with the additional parameters set to zero, create the EWMA of the data, allowing the function itself to choose the optimal value of $\alpha$. 
+Investigate and visualise the output, comparing it to the original time series.
+
+<p>
+#### Worksheet Exercise 5.6
+Specifying values of $\alpha$ of 0.2 and 0.9, create new versions of the EWMA and compare them with previous fits of the EWMA.
+
+
+### The Holt-Winters Method 
+
+The Holt-Winters method generalises this concept, allowing for trends and seasonal effects. The equations that govern this model for seasonal period, $p$, are given by
+
+\begin{eqnarray}
+a_t &=& \alpha (x_t - s_{t-p}) + (1 - \alpha)(a_{t-1} - b_{t-1}), \nonumber \\
+b_t &=& \beta (a_t - a_{t-1}) + (1 - \beta)b_{t-1},\\
+s_t &=& \gamma (x_t - a_t) + (1 - \gamma) s_{t-p}, \nonumber
+\end{eqnarray}
+
+
+where $a_t$, $b_t$, $s_t$ are the estimated level, slope and seasonal effect at time $t$, and $\alpha$, $\beta$ and $\gamma$ are the
+smoothing parameters.
+
+#### Worksheet Exercise 5.7
+
+Fit the Holt-Winters parameters to the air passenger data and check the fit. Visualise the raw time-series against the fitted data.
+
+#### Worksheet Exercise 5.8
+
+Predict data ahead for four years and visualise this data. How reliable are these forecasts do you think?
+
+
+### Solutions

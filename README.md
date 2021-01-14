@@ -1,2 +1,6 @@
-# TimeSeriesWithR.github.io
-Time Series Analysis with R
+Introduction to R
+=================
+
+* The R environment
+* Working with R
+* Objects

@@ -1,0 +1,30 @@
+
+#### Worksheet Exercise 1.1
+
+Load the air passengers data into your workspace and investigate the
+structure of the \texttt{ts} object using ``str()``. How is a
+\texttt{ts} object different from a standard vector in R? Plot it
+using the default ``plot()`` method.
+
+
+
+```{r}
+
+class(AP.ts);
+str(AP.ts);
+```
+
+```{r}
+start(AP.ts); end(AP.ts); frequency(AP.ts);
+```
+
+```{r}
+plot(AP.ts, ylab = "Air Passengers (\'000s)");
+```
+
+```{r}
+### Using ggplot2 looks better, but you have to work hard for the
+### labels on the x-axis so I am leaving this out for now.
+
+qplot(1:length(AP.ts), as.vector(AP.ts), geom = 'line', ylab = 'Air Passengers (\'000s)');
+```

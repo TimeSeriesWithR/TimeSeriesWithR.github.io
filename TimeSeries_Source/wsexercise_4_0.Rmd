@@ -1,0 +1,135 @@
+Autocorrelation {data-navmenu="Exercises"}
+===================================================
+
+Column {.tabset}
+---------------------------------
+
+### Autocorrelation
+
+
+
+Assuming we can remove the trend and the seasonal variation, that
+still leaves the random component, $z_t$. Unfortunately, analysing
+this is usually highly non-trivial. As discussed, we model the random
+component as a sequence of random variables, but no further
+assumptions we made.
+
+To simplify the analysis, we often make assumptions like
+\emph{independent and identically distributed (i.i.d.)} random
+variables, but this will rarely work well. Most of the time, the $z_t$
+are correlated.
+
+The \emph{expected value} or \emph{expectation} of a random variable
+$x$, denoted $E(x)$, is the mean value of $x$ in the population. So,
+for a continuous $x$, we have
+
+\[
+\mu = E(x) = \int p(x) \, x \, dx.
+\]
+
+\noindent
+and the \emph{variance}, $\sigma^2$, is the expectation of the squared
+deviations,
+
+\[
+\sigma^2 = E[(x - \mu)^2],
+\]
+
+For bivariate data, each datapoint can be represented as $(x, y)$ and
+we can generalise this concept to the \emph{covariance},
+$\gamma(x, y)$,
+
+\begin{equation}
+\gamma(x, y) = E[(x - \mu_x)(y - \mu_y)].
+\end{equation}
+
+\noindent
+Correlation, $\rho$, is the standardised covariance, dividing the
+covariance by the standard deviation of the two variables,
+
+\begin{equation}
+\rho(x, y) = \frac{\gamma(x, y)}{\sigma_x \sigma_y}.
+\end{equation}
+
+\noindent
+The mean function of a time series model is
+
+\begin{equation}
+\mu(t) = E(x_t),
+\end{equation}
+
+
+with the expectation in this case being across the \emph{ensemble} of possible time series that might have been produced by this model. Of
+course, in many cases, we only have one realisation of the model, and so, without any further assumption, estimate the mean to be the
+measured value.
+
+If the mean function is constant, we say that the time-series is
+\emph{stationary in the mean}, and the estimate of the population mean is just the sample mean,
+
+\begin{equation}
+\mu = \sum^n_{t=1} x_t.
+\end{equation}
+
+\noindent
+The variance function of a time-series model that is stationary in the
+mean is given by
+
+\begin{equation}
+\sigma^2(t) = E[(x_t - \mu)^2],
+\end{equation}
+
+\noindent
+and if we make the further assumption that the time-series is also stationary in the variance, then the population variance is just the
+sample variance
+
+\begin{equation}
+\text{Var}(x) = \frac{\sum(x_t - \mu)^2}{n - 1}
+\end{equation}
+
+Autocorrelation, often referred to as \emph{serial correlation}, is the correlation between the random variables at different time intervals. We can define the \emph{autocovariance function} and the
+\emph{autocorrelation function} as functions of the \emph{lag}, $k$, as
+
+\begin{eqnarray}
+\gamma_k &=& E[(x_t - \mu)(x_{t+k} - \mu)], \\
+\rho_k   &=& \frac{\gamma_k}{\sigma^2}.
+\end{eqnarray}
+
+Be default, the ``acf()`` function plots the \emph{correlogram},
+which is a plot of the sample autocorrelation at $r_k$ against the lag
+$k$.
+
+
+#### Exercise 4.1
+
+Using the function ``acf()``, calculate the autocorrelations for
+all the time series we have looked at. Look at the structure of the
+output, and use the help system to see what options are provided.
+
+<p>
+#### Exercise 4.2
+Check the output of ``acf()`` against manual calculations of the
+correlations at various timesteps. Do the numbers match?
+
+
+\textbf{HINT:} The ``cor()`` function and some vector indexing
+will be helpful here.
+
+<p>
+
+#### Exercise 4.3
+Plot the output of the ``acf()`` for the different time
+series. Think about what these plots are telling you. Do do these
+plots help the modelling process, if so, how?
+
+<p>
+
+#### Exercise 4.4
+Decompose the air passenger data and look at the appropriate
+correlogram. What does this plot tell you? How does it differ from the
+previous correlogram you looked at?
+
+
+How can we use all that we have learned so far to assess the efficacy
+of the decompositional approach for time series?
+
+### Solutions
