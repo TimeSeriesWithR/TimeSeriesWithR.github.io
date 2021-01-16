@@ -1,0 +1,135 @@
+
+## Forecasting with Linear Models
+============================================
+column {.tabset}
+--------------------
+### Forecasting
+<h4> Forecating</h4>
+One possible starting point for forecasting problems is to use a linear model,
+much like any other predictive modelling with time as an input to the
+regression. We account for seasonality by using the various calendar labels as
+additional predictors.
+
+Rather than fit the model on the whole dataset, we use the final year of data
+as our test dataset.
+
+```{r ap_forecast_regression_data, echo=TRUE}
+ap_lm_data_tbl <- airpassengers_tbl %>%
+  mutate(month_label = format(month, '%m'),
+         year_num    = year(month)
+         )
+
+ap_train_tbl <- ap_lm_data_tbl %>% filter(year_num != 1960)
+ap_test_tbl  <- ap_lm_data_tbl %>% filter(year_num == 1960)
+```
+
+```{r maine_forecast_regression_data, echo=TRUE}
+maine_train_tbl <- maine_tbl %>% filter(month <  as.yearmon('2005-01'))
+maine_test_tbl  <- maine_tbl %>% filter(month >= as.yearmon('2005-01'))
+```
+
+
+
+### Simple Linear Model
+
+We now fit a model.
+
+```{r ap_forecast_regression_lm, echo=TRUE}
+ap_base_lm <- lm(value ~ 0 + month_label + year_num, data = ap_train_tbl)
+```
+```{r}
+ap_base_lm %>% glance()
+ap_base_lm %>% tidy()
+```
+
+We now check the fitted values against the observed.
+
+```{r ap_forecast_regression_train, echo=TRUE}
+plot_tbl <- ap_base_lm %>%
+  augment() %>%
+  mutate(month = paste(year_num, month_label, sep = '-') %>% as.yearmon()) %>%
+  select(month, observed = value, fitted = .fitted) %>%
+  gather('series', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = series)) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle("Comparison Lineplot of Air Passengers vs Linear Model")
+```
+
+We see that the additive model here may be less appropriate as a multiplicative
+model as our linear model over-estimates early values and then under-estimates
+towards the end of the series.
+
+We expect this will continue when we try the model with the test data.
+
+```{r ap_forecast_regression_test, echo=TRUE}
+plot_tbl <- ap_base_lm %>%
+  augment(newdata = ap_test_tbl) %>%
+  mutate(month = paste(year_num, month_label, sep = '-') %>% as.yearmon()) %>%
+  select(month, observed = value, fitted = .fitted) %>%
+  gather('series', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = series)) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle("Comparison Lineplot of Air Passengers vs Linear Model (1960 points)")
+```
+
+
+### Poisson Model
+
+A more appropriate model may be to fit the Poisson model.
+
+```{r ap_forecast_regression_glm, echo=TRUE}
+ap_base_glm <- glm(value ~ 0 + month_label + year_num,
+                   data   = ap_train_tbl,
+                   family = poisson)
+
+ap_base_glm %>% glance()
+ap_base_glm %>% tidy()
+```
+
+We now check the fitted values against the observed.
+
+```{r ap_forecast_regression_glm_train, echo=TRUE}
+plot_tbl <- ap_base_glm %>%
+  augment(type.predict = 'response') %>%
+  mutate(month = paste(year_num, month_label, sep = '-') %>% as.yearmon()) %>%
+  select(month, observed = value, fitted = .fitted) %>%
+  gather('series', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = series)) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle("Comparison Lineplot of Air Passengers vs Poisson Model")
+```
+
+We see that a Poisson model does a better job of capturing the magnitude of
+the values throughout the series. We hope this means the 1960 data points are
+better matched also.
+
+```{r ap_forecast_regression_glm_test, echo=TRUE}
+plot_tbl <- ap_base_glm %>%
+  augment(newdata = ap_test_tbl, type.predict = 'response') %>%
+  mutate(month = paste(year_num, month_label, sep = '-') %>% as.yearmon()) %>%
+  select(month, observed = value, fitted = .fitted) %>%
+  gather('series', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = series)) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle("Comparison Lineplot of Air Passengers vs Poisson Model (1960 points)")
+```
