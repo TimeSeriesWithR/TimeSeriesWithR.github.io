@@ -1,0 +1,313 @@
+
+
+# AR, MA and ARMA Models
+
+We now turn our attention to the auto-regressive and moving average model - the
+second workhorse for time-series modelling.
+
+## Building Blocks
+
+These models are built from a number of elementary model types that we first
+discuss before combining in different ways to model time series data seen in
+the real world.
+
+
+### White Noise Series
+
+A time series $w_t$ is \emph{discrete white noise} if the $w_t$ are i.i.d with
+a mean of zero. They all have the same variance $\sigma^2$ and
+$\text{Cor}(w_i, w_j) = 0$ for $i \neq j$.
+
+In addition, if $w_j \sim N(0, \sigma^2)$ then it is called
+\emph{Gaussian white noise}.
+
+
+A time series $x_t$ is a \emph{random walk} if
+
+$$
+x_t = x_{t-1} + w_t,
+$$
+
+where $w_t$ is a white-noise series.
+
+
+```{r white_noise_series, echo=TRUE}
+wn_innov <- rnorm(200, 0, 1)
+
+sim_wn_ts <- arima.sim(list(),
+                       n = length(wn_innov),
+                       innov = wn_innov,
+                       start.innov = rep(0, 100)
+                      )
+
+sim_wn_ts_tbl <- sim_wn_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_wn_ts), .before = 1)
+
+ggplot(sim_wn_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated Gaussian White Noise Series")
+```
+
+We also produce a standard and partial correlogram, but expect no significant
+lags.
+
+```{r white_noise_acf_pacf, echo=TRUE}
+sim_wn_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for White Noise Series")
+sim_wn_ts %>% Pacf() %>% autoplot() + ggtitle("PACF for White Noise Series")
+```
+
+
+### Autoregressive Process - AR(p)
+
+The time series $x_t$ is an \emph{auto-regressive process of order $p$},
+$\text{AR}(p)$, if,
+
+\begin{eqnarray*}
+x_t &=& \delta + \alpha_1 x_1 + ... + \alpha_p x_p + w_t \\
+    &=& \alpha_0 + \sum^p_{i=1} \alpha_i x_{t-i} + w_t,
+\end{eqnarray*}
+
+where
+
+\begin{eqnarray*}
+w_t      &=&    \text{is a white-noise process} \\
+\delta   &=&    \text{'intercept' value}     \\
+\alpha_p &\neq& 0 \text{ for order } p
+\end{eqnarray*}
+
+
+With this definition, we can use this as a *data-generating process* to
+construct an example AR(1) model, and visual inspect the results.
+
+```{r generate_ar1_model, echo=TRUE}
+sim_ar1_ts <- arima.sim(list(ar = 0.5),
+                        n     = length(wn_innov),
+                        innov = wn_innov,
+                        start.innov = rep(0, 100)
+                        )
+
+sim_ar1_ts_tbl <- sim_ar1_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_ar1_ts), .before = 1)
+
+ggplot(sim_ar1_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated AR(1) Series")
+```
+
+Having generated the AR(1) process, we now look at the correlogram to see what
+it produces.
+
+```{r ar1_acf_pacf, echo=TRUE}
+sim_ar1_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for AR(1) Series")
+sim_ar1_ts %>% Pacf() %>% autoplot() + ggtitle("PACF for AR(1) Series")
+```
+
+
+Moving on, in a similar fashion we can construct an AR(2) model with the same
+innovations, but with $\alpha_1 = 1$, $\alpha_2 = -0.25$:
+
+
+```{r generate_ar2_model, echo=TRUE}
+sim_ar2_ts <- arima.sim(list(ar = c(1, -0.25)),
+                        n     = length(wn_innov),
+                        innov = wn_innov,
+                        start.innov = rep(0, 100)
+                         )
+
+sim_ar2_ts_tbl <- sim_ar2_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_ar2_ts), .before = 1)
+
+
+ggplot(sim_ar2_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated AR(2) Series")
+```
+
+We also look at the correlogram for this series.
+
+```{r ar2_acf_pacf, echo=TRUE}
+sim_ar2_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for AR(2) Series")
+sim_ar2_ts %>% Pacf() %>% autoplot() + ggtitle("PACF for AR(2) Series")
+```
+
+
+
+We can try a number of different parameters here to see the effect - we try
+another AR(2) but this time with both parameters positive:
+
+
+```{r generate_ar2alt_model, echo=TRUE}
+sim_ar2alt_ts <- arima.sim(list(ar = c(0.5, 0.4)),
+                           n     = length(wn_innov),
+                           innov = wn_innov,
+                           start.innov = rep(0, 100)
+                           )
+
+sim_ar2alt_ts_tbl <- sim_ar2alt_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_ar2alt_ts), .before = 1)
+
+
+ggplot(sim_ar2alt_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated Alternate AR(2) Series")
+```
+
+And the correlogram for this alternate AR(2) series.
+
+```{r ar2alt_acf_pacf, echo=TRUE}
+sim_ar2alt_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for Alternate AR(2) Series")
+sim_ar2alt_ts %>% Pacf() %>% autoplot() + ggtitle("ACF for Alternate AR(2) Series")
+```
+
+To help with intuition we plot these generated data together.
+
+```{r plot_generated_ar_series, echo=TRUE}
+sim_compare_tbl <- list(
+  wn     = sim_wn_ts_tbl,
+  ar1    = sim_ar1_ts_tbl,
+  ar2    = sim_ar2_ts_tbl,
+  ar2alt = sim_ar2alt_ts_tbl
+  ) %>%
+  bind_rows(.id = 'model')
+
+
+ggplot(sim_compare_tbl) +
+  geom_line(aes(x = index, y = value, colour = model)) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Generated AR Models Comparison Plot")
+```
+
+
+### Moving Average Process - MA(q)
+
+A moving average (MA) process of order $q$ is a linear combination of the
+current white noise term and the $q$ most recent past white noise terms,
+
+\begin{eqnarray*}
+x_t &=& w_t + \gamma + \beta_1 w_1 + ... + \beta_q w_q \\
+    &=& \gamma + w_t + \sum^q_{i=1} \beta_i w_{t-i}
+\end{eqnarray*}
+
+where $w_t$ is a white-noise process with mean 0 and variance $\sigma^2$.
+
+\begin{eqnarray*}
+w_t     &=&    \text{is a white-noise process with mean 0 and variance } \sigma^2 \\
+\gamma  &=&    \text{'intercept' value}     \\
+\beta_q &\neq& 0 \text{ for order } q
+\end{eqnarray*}
+
+
+```{r generate_ma1_model, echo=TRUE}
+sim_ma1_ts <- arima.sim(list(ma = 0.5),
+                        n     = length(wn_innov),
+                        innov = wn_innov,
+                        start.innov = rep(0, 100)
+                        )
+
+sim_ma1_ts_tbl <- sim_ma1_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_ma1_ts), .before = 1)
+
+ggplot(sim_ma1_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated MA(1) Series")
+```
+
+We check the MA(1) correlogram:
+
+```{r ma1_acf_pacf, echo=TRUE}
+sim_ma1_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for MA(1) Series")
+sim_ma1_ts %>% Pacf() %>% autoplot() + ggtitle("ACF for MA(1) Series")
+```
+
+
+Like we did before, we now generate an MA(2) model.
+
+```{r generate_ma2_model, echo=TRUE}
+sim_ma2_ts <- arima.sim(list(ma = c(1, -0.25)),
+                        n     = length(wn_innov),
+                        innov = wn_innov,
+                        start.innov = rep(0, 100)
+                         )
+
+sim_ma2_ts_tbl <- sim_ma2_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_ma2_ts), .before = 1)
+
+
+ggplot(sim_ma2_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated MA(2) Series")
+```
+
+Once again we look at the MA(2) series.
+
+```{r ma2_acf_pacf, echo=TRUE}
+sim_ma2_ts %>% Acf()  %>% autoplot() + ggtitle("ACF for MA(2) Series")
+sim_ma2_ts %>% Pacf() %>% autoplot() + ggtitle("ACF for MA(2) Series")
+```
+
+
+```{r plot_generated_ma_series, echo=TRUE}
+sim_compare_tbl <- list(
+  wn  = sim_wn_ts_tbl,
+  ma1 = sim_ma1_ts_tbl,
+  ma2 = sim_ma2_ts_tbl
+  ) %>%
+  bind_rows(.id = 'model')
+
+
+ggplot(sim_compare_tbl) +
+  geom_line(aes(x = index, y = value, colour = model)) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Generated MA Models Comparison Plot")
+```
+
+
+### Comparing AR and MA Models
+
+Before moving on to ARMA and ARIMA models we combine all our generated series
+and plot them all against each other.
+
+```{r plot_generated_ar_ma_series, echo=TRUE}
+sim_compare_tbl <- list(
+  wn     = sim_wn_ts_tbl,
+  ar1    = sim_ar1_ts_tbl,
+  ar2    = sim_ar2_ts_tbl,
+  ar2alt = sim_ar2alt_ts_tbl,
+  ma1    = sim_ma1_ts_tbl,
+  ma2    = sim_ma2_ts_tbl
+  ) %>%
+  bind_rows(.id = 'model')
+
+
+ggplot(sim_compare_tbl) +
+  geom_line(aes(x = index, y = value, colour = model)) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Generated AR and MA Models Comparison Plot")
+```
