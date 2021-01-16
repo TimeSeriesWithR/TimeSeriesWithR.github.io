@@ -1,0 +1,368 @@
+
+
+
+## ARMA and ARIMA Models
+
+Autoregressive moving-average models combine both the AR and MA models
+together. The benefit of combining both models is due to the
+*principle of parsimony* - given two equal quality models, we prefer the one
+with the lower number of parameters.
+
+In general, ARMA models fit time series with a lower number of parameters than
+either AR or MA models alone, so they are preferred.
+
+More formally, we define an $\text{ARMA}(p, q)$ model to be
+
+$$
+x_t = \sum_{i=1}^p \alpha_i x_{t-i} + w_t + \sum_{j=1}^q \beta_j w_{t-j}
+$$
+
+where $w_t$ is white noise.
+
+Both $\text{AR}(p)$ and $\text{MA}(q)$ models are special cases of
+$\text{ARMA}(p, q)$ (with $q = 0$ and $p = 0$ respectively).
+
+We now fit an $\text{ARMA}(1, 1)$ model using the same white-noise innovations
+as before.
+
+
+```{r generate_arma_1_1_model, echo=TRUE}
+sim_arma_1_1_ts <- arima.sim(list(ar = 0.5, ma = 0.5),
+                             n     = length(wn_innov),
+                             innov = wn_innov,
+                             start.innov = rep(0, 100)
+                             )
+
+sim_arma_1_1_ts_tbl <- sim_arma_1_1_ts %>%
+  tk_tbl(preserve_index = FALSE) %>%
+  add_column(index = 1:length(sim_arma_1_1_ts), .before = 1)
+
+ggplot(sim_arma_1_1_ts_tbl) +
+  geom_line(aes(x = index, y = value)) +
+  expand_limits(y = 0) +
+  xlab("Index") +
+  ylab("Value") +
+  ggtitle("Plot of Generated ARMA(1,1) Series")
+```
+
+We use `auto.arima()` to fit parameters for this data to see if we recover the
+given parameters.
+
+```{r fit_sim_arma_1_1, echo=TRUE}
+sim_arma_1_1_ts %>%
+  auto.arima() %>%
+  sw_tidy()
+```
+
+
+### ARIMA Models
+
+As discussed earlier, it is often more effective to model the differences in
+a time series rather than the raw values.
+
+A variant of the ARMA is the *Auto-Regressive Integrated Moving Average* model
+which applies the ARMA model to the differences. ARIMA model are specified With
+a third order value, $d$ - the order of the differences, and so are described
+as $\text{ARIMA}(p, d, q)$ models.
+
+While there is no theoretical limit to $d$, in practice it is uncommon to see
+$d > 1$.
+
+
+## Fitting ARMA and ARIMA Models
+
+We now turn our attention to fitting ARMA and ARIMA models.
+
+In some cases, we use a combination of domain knowledge and autocorrelation
+analysis to determine the order of the AR(I)MA model we fit, but generally we
+go with the best fit as determined by AIC or BIC (and ensure this 'best' fit
+is still useful and makes sense).
+
+
+### Fitting the Air Passenger Data
+
+As always, we start with the Air Passenger data.
+
+Purely for illustration, we start with the ARIMA(1, 0, 1) model - which is
+equivalent to the ARMA(1, 1) - and then try the ARIMA(1, 1, 1).
+
+```{r fit_ap_arma_1_1_arima, echo=TRUE}
+ap_arma_1_1_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  Arima(order = c(1, 0, 1))
+
+ap_arma_1_1_forecast <- ap_arma_1_1_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_arma_1_1_forecast_tbl <- ap_arma_1_1_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ap_arma_1_1_fit %>% sw_tidy()
+ap_arma_1_1_fit %>% sw_glance()
+
+
+ggplot(ap_arma_1_1_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Air Passenger Forecast for ARMA(1, 1) Model')
+```
+
+This is not a good model.
+
+```{r fit_ap_arma_1_1_1_arima, echo=TRUE}
+ap_arma_1_1_1_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  Arima(order = c(1, 1, 1))
+
+ap_arma_1_1_1_forecast <- ap_arma_1_1_1_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_arma_1_1_1_forecast_tbl <- ap_arma_1_1_1_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ap_arma_1_1_1_fit %>% sw_tidy()
+ap_arma_1_1_1_fit %>% sw_glance()
+
+
+ggplot(ap_arma_1_1_1_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Air Passenger Forecast for ARIMA(1, 1, 1) Model')
+```
+
+This is not a good model either. We need to include a seasonal component to
+this process to use it properly.
+
+Before we move on, we try using the `auto.arima()` function to see what the
+best model looks like.
+
+```{r ap_autoarima_fit, echo=TRUE}
+ap_autoarima_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  auto.arima(seasonal = FALSE)
+
+ap_autoarima_forecast <- ap_autoarima_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_autoarima_forecast_tbl <- ap_autoarima_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ap_autoarima_fit %>% sw_tidy()
+ap_autoarima_fit %>% sw_glance()
+
+
+ggplot(ap_autoarima_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Air Passenger Forecast for Auto-ARIMA Model')
+```
+
+We will look at including seasonal elements to the ARIMA model shortly.
+
+
+### Fitting the Maine Unemployment Data
+
+We will not try to fit any particular order of ARIMA model for the Maine
+Unemployment data and move straight to using `auto.arima()` to fit the models.
+
+```{r maine_autoarima_fit, echo=TRUE}
+maine_autoarima_fit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  auto.arima(seasonal = FALSE)
+
+maine_autoarima_forecast <- maine_autoarima_fit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_autoarima_forecast_tbl <- maine_autoarima_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+maine_autoarima_fit %>% sw_tidy()
+maine_autoarima_fit %>% sw_glance()
+
+
+ggplot(maine_autoarima_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Maine Unemployment Forecast for Auto-ARIMA Model')
+```
+
+
+## Seasonal ARIMA Models
+
+We add seasonality to an ARIMA model by adding separate analysis for the
+seasonal component of the time series.
+
+Full detail of this approach is beyond the scope of this workshop, but we
+specify a SARIMA model as $\text{SARIMA}(p, d, q)(P, D, Q)_m$, where the capitals
+$(P, D, Q)$ are for the seasonal part of the model, with $m$ denoting the
+number of data points per seasonal cycle - so we have $m = 12$ for monthly
+data with annual seasonality.
+
+### Fitting SARIMA Models
+
+Fitting a Seasonal-ARIMA is a matter of adding the `seasonal = TRUE` parameter
+to `auto.arima()`.
+
+We now fit SARIMA models for both the Air Passenger and Maine Unemployment
+data.
+
+```{r ap_sarima_fit, echo=TRUE}
+ap_sarima_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  auto.arima(seasonal = TRUE)
+
+ap_sarima_forecast <- ap_sarima_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_sarima_forecast_tbl <- ap_sarima_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ap_sarima_fit %>% sw_tidy()
+ap_sarima_fit %>% sw_glance()
+
+
+ggplot(ap_sarima_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Air Passenger Forecast for Seasonal ARIMA Model')
+```
+
+
+Now we fit the Maine Unemployment data.
+
+
+```{r maine_sarima_fit, echo=TRUE}
+maine_sarima_fit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  auto.arima(seasonal = TRUE)
+
+maine_sarima_forecast <- maine_sarima_fit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_sarima_forecast_tbl <- maine_sarima_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+maine_sarima_fit %>% sw_tidy()
+maine_sarima_fit %>% sw_glance()
+
+
+ggplot(maine_sarima_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Maine Unemployment Forecast for Seasonal ARIMA Model')
+```
+
+
+
+## Forecast Evaluation
+
+We now run forecast evaluations metrics for all our forecasts.
+
+
+### Air Passenger Forecasts
+
+We run the data for the Air Passenger data.
+
+```{r calculate_ap_evaluations, echo=TRUE}
+ap_metrics_tbl <- ls(pattern = '^ap_.*_forecast$') %>%
+  enframe(value = 'variable') %>%
+  mutate(model    = str_replace(variable, 'ap_(.*)_forecast', '\\1'),
+         data     = map(variable, get),
+         accuracy = map(data, accuracy, x = ap_test_tbl$value),
+         acc_tbl  = map(accuracy, as_tibble, rownames = 'type')) %>%
+  select(model, acc_tbl) %>%
+  unnest() %>%
+  arrange(type, model)
+
+ap_metrics_tbl %>% summary()
+```
+
+
+```{r plot_full_ap_metrics, echo=TRUE}
+plot_tbl <- ap_metrics_tbl %>%
+  gather('metric', 'value', -model, -type)
+  
+ggplot(plot_tbl) +
+  geom_col(aes(x = model, y = value, fill = type), position = 'dodge') +
+  facet_wrap(~ metric, scales = 'free_y') +
+  xlab('Model') +
+  ylab('Metric') +
+  ggtitle('Facet Plot for Air Passenger Forecast Metrics') +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+
+### Maine Unemployment Forecasts
+
+And we run the data for the Maine Unemployment time series.
+
+```{r calculate_maine_evaluations, echo=TRUE}
+maine_metrics_tbl <- ls(pattern = '^maine_.*_forecast$') %>%
+  enframe(value = 'variable') %>%
+  mutate(model    = str_replace(variable, 'maine_(.*)_forecast', '\\1'),
+         data     = map(variable, get),
+         accuracy = map(data, accuracy, x = maine_test_tbl$value),
+         acc_tbl  = map(accuracy, as_tibble, rownames = 'type')) %>%
+  select(model, acc_tbl) %>%
+  unnest() %>%
+  arrange(type, model)
+
+maine_metrics_tbl %>% summary()
+```
+
+```{r plot_full_maine_metrics, echo=TRUE}
+plot_tbl <- maine_metrics_tbl %>%
+  gather('metric', 'value', -model, -type)
+  
+ggplot(plot_tbl) +
+  geom_col(aes(x = model, y = value, fill = type), position = 'dodge') +
+  facet_wrap(~ metric, scales = 'free_y') +
+  xlab('Model') +
+  ylab('Metric') +
+  ggtitle('Facet Plot for Maine Unemployment Forecast Metrics') +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+Addtional Information
+====================================
+
+### R Environment
+
+```{r show_session_info, echo=TRUE, message=TRUE}
+devtools::session_info()
+```
