@@ -1,0 +1,1171 @@
+---
+title: "Time Series Analysis with R"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: united
+    css: style.css
+---
+
+```{r knit_opts, include = FALSE}
+#rm(list = ls()); gc()
+
+knitr::opts_chunk$set(tidy       = FALSE,
+                      cache      = FALSE,
+                      message    = FALSE,
+                      warning    = FALSE,
+                      fig.height =     8,
+                      fig.width  =    11)
+
+library(conflicted)
+library(tibble)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(magrittr)
+library(tidyquant)
+library(ggplot2)
+library(scales)
+library(cowplot)
+library(cranlogs)
+library(timetk)
+library(sweep)
+library(seasonal)
+library(forecast)
+library(broom)
+
+conflict_prefer('select',  'dplyr')
+conflict_prefer('filter',  'dplyr')
+conflict_prefer('lag',     'dplyr')
+conflict_prefer('extract', 'magrittr')
+
+
+
+options(width = 80L,
+        warn  = 1
+        )
+
+set.seed(42)
+
+theme_set(theme_cowplot())
+
+
+source('custom_functions.R')
+```
+
+Introduction {data-navmenu="Introduction"}
+============================================
+column {.tabset}
+---------------------------
+### Introduction
+
+<h4>Introduction</h4>
+
+Time series occur in most fields of study that produce quantitative data.
+Whenever quantities are measured over time, those measurements form a
+time-series, or more formally, a discrete-time stochastic process.
+
+
+The content of this workshop is partly based on the book "Introductory Time
+Series with R" by Paul Cowpertwait and Andrew Metcalfe. 
+
+While available as in dead-tree form, the full text is available online:
+
+https://otexts.com/fpp2/
+
+
+
+
+
+### R Packages
+
+In this workshop we focus on the use of 'tidy'-style tools in the analysis of
+time-series. In particular we look at packages such as `tidyquant` that enable
+and simplify this approach to time-series analysis.
+
+
+Basic Concepts {data-navmenu="Introduction"}
+==========================================
+column {.tabset}
+---------------------------
+### Basic Concepts
+
+A famous example of a time-series is count of airline passengers in the US,
+as shown in the figure below. This is a simple univariate time-series, with
+measurements taken on a monthly basis over a number of years, each datum
+consisting of a single number - the number of passengers travelling via
+a commercial flight that month.
+
+```{r plot_air_passenger_timeseries, echo=TRUE}
+plot(AirPassengers)
+```
+
+Before we begin analysing such data, we first need to create a mathematical
+framework to work in. Fortunately, we do not need anything too
+complicated, and for a finite time-series of length $N$, we model the time
+series as a sequence of $N$ random variables, $X_i$, with $i = 1, 2, ..., N$.
+
+Note that each individual $X_i$ is a wholly separate random variable: we only
+ever have a single measurement from each random variable. In many cases we
+simplify this, but it is important to understand and appreciate that such
+simplifications are just that. Time series are difficult to analyse.
+
+Before we get to any of that though, and before we try to build any kind of
+models for the data, we always start with visualising the data. Often, a simple
+plot of the data helps use pick out aspects to analyse and incorporate into the
+models. For time series, one of the first things to do is the *time plot*, a
+simple plot of the data over time.
+
+For the passenger data, a few aspects stand out that are very common in time
+series. It is apparent that the numbers increase over time, and this systematic
+change in the data is called the *trend*. Often, approximating the trend as a
+linear function of time is adequate for many data sets.
+
+A repeating pattern in the data that occurs over the period of the data (in
+this case, each year), is called the *seasonal variation*, though a more
+general concept of 'season' is implied --- it often will not coincide with the
+seasons of the calendar.
+
+A slightly more generalised concept from the seasonality is that of *cycles*,
+repeating patterns in the data that do not correspond to the natural fixed
+periods of the model. None of these are apparent in the air passenger data, and
+accounting for them are beyond the scope of this introductory tutorial.
+
+Finally, another important benefit of visualising the data is that it helps
+identify possible *outliers* and *erroneous* data.
+
+In many cases, we will also be dealing with time series that have multiple
+values at all, many or some of the points in time.
+
+Often, these values will be related in some ways, and we will want to analyse
+those relationships also. In fact, one of the most efficient methods of
+prediction is to find *leading indicators* for the value or values you wish to
+predict --- you can often use the current values of the leading indicators to
+make inference on future values of the related quantities.
+
+The fact that this is one of the best methods in time series analysis says a
+lot about the difficulty of prediction (Yogi Berra, a US baseball player noted
+for his pithy statements, once said "Prediction is difficult, especially about
+the future").
+
+
+Example Timeseries {data-navmenu="Introduction"}
+==================================================
+column {.tabset}
+--------------------------
+### Example Data Sets 
+In this workshop we will look at a number of different time-series, discussed
+here.
+
+This data comes in a few different format, and this workshop discusses methods
+for analysing this data in a common format.
+
+
+### Air Passenger Data
+
+As mentioned previously, a canonical time-series is the airline passenger
+dataset, and this is the first dataset we look at.
+
+```{r show_airline_passengers}
+# AirPassengers %>% summary()
+
+AirPassengers %>% plot()
+```
+
+In this workshop we will convert all time series into the tibbles: the package
+`timetk` allows us to do this.
+
+```{r convert_airpassengers_tibble, echo=TRUE}
+airpassengers_tbl <- AirPassengers %>% tk_tbl(rename_index = 'month')
+```
+
+```{r}
+#airpassengers_tbl %>% head()
+```
+
+```{r}
+
+ggplot(airpassengers_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  expand_limits(y = 0) +
+  xlab('Date') +
+  ylab('Passenger Count') +
+  scale_x_yearmon() +
+  ggtitle('Plot of Air Passenger Time Series')
+```
+
+
+### Maine Unemployment Data
+
+Time series are very common in econometrics, and a dataset provided in the
+text is that of monthly unemployment statistics in Maine from 1996 on. I have
+included the datafile in this workshop.
+
+```{r load_maine_unemployment, echo=TRUE}
+maine_ts <- scan('data/Maine.dat', skip = 1) %>%
+  ts(start = 1996, frequency = 12)
+
+#maine_ts %>% summary()
+maine_ts %>% plot()
+```
+
+As before, we convert this data into a tibble and recreate the plot using
+`ggplot2`.
+
+```{r maine_unemployment_tibble, echo=TRUE}
+maine_tbl <- maine_ts %>% tk_tbl(rename_index = 'month')
+
+#maine_tbl %>% summary()
+```
+
+```{r}
+
+ggplot(maine_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  expand_limits(y = 0) +
+  xlab('Date') +
+  ylab('Unemployment Numbers') +
+  scale_x_yearmon() +
+  ggtitle('Plot of Maine Unemployment Time Series')
+```
+
+
+### Australian Consumption Statistics (CBE)
+
+Governments produce regular data on consumption numbers for their economy.
+
+One
+such dataset is contained in the file `cbe.dat`, produced by the Australian
+Census Bureau containing data of chocolate, beer and energy production on a
+monthly basis.
+
+```{r load_australian_cbe_data, echo=TRUE}
+library(readr)
+cbe_raw_tbl <- read_tsv('data/cbe.dat')
+
+#cbe_raw_tbl %>% glimpse()
+```
+
+Similar to the Maine file, this data does not contain time indices for the
+data. For the sake of completeness, we use the same approach as before and
+convert to a tibble, but we will also show how to construct the time index
+without having to do intermediate conversions.
+
+First we add time indices via `ts` conversions.
+
+
+```{r construct_cbe_timeseries, echo=TRUE}
+cbe_ts <- cbe_raw_tbl %>%
+  as.matrix() %>%
+  ts(start = 1958, frequency = 12)
+
+cbe_ts %>% head(10)
+cbe_ts %>% plot()
+```
+
+An alternative approach is to add the time index directly.
+
+```{r australian_cbe_add_time, echo=TRUE}
+n_data <- cbe_raw_tbl %>% nrow()
+
+cbe_tbl <- cbe_raw_tbl %>%
+  add_column(month = (1958 + (0:(n_data-1)/12)) %>% yearmon, .before = 1)
+
+
+cbe_tbl %>% glimpse()
+#cbe_tbl %>% summary()
+```
+
+Having constructed the tibble, we now construct these time series plots using
+`ggplot2`.
+
+```{r construct_cbe_plots, echo=TRUE}
+plot_tbl <- cbe_tbl %>%
+  gather('product', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = product)) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Production Amount") +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Production Data from Australian Government')
+```
+
+
+Due to the different scales, it might be more useful to use a faceted plot for
+each product:
+
+```{r plot_cbe_facetted_data, echo=TRUE}
+plot_tbl <- cbe_tbl %>%
+  gather('product', 'value', -month)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  facet_grid(rows = vars(product), scales = 'free_y') +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Production Amount") +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Production Data from Australian Government')
+```
+
+
+### Australian Building Activity
+
+Another set of data produced by the Australian Census Bureau is the Building
+Activity Publication listing the value of building work done in each quarter.
+This data contains the total dwellings approved for construction per month,
+averaged over the past three months, and the value of work done over the past
+three months.
+
+This data is quarterly from 1996, and we construct the data as before.
+
+
+```{r read_approvactiv_data, echo=TRUE}
+approvactiv_raw_tbl <- read_tsv('data/ApprovActiv.dat')
+
+approvactiv_raw_tbl %>% glimpse()
+
+
+approvactiv_ts <- approvactiv_raw_tbl %>%
+  as.matrix() %>%
+  ts(start = 1996, frequency = 4)
+
+approvactiv_ts %>% head(10)
+approvactiv_ts %>% plot()
+```
+```{r}
+
+approvactiv_tbl <- approvactiv_ts %>%
+  tk_tbl(rename_index = 'quarter')
+
+approvactiv_tbl %>% glimpse()
+#approvactiv_tbl %>% summary()
+```
+
+As before, we can produce time plots in `ggplot2`.
+
+
+```{r construct_approvactiv_plots, echo=TRUE}
+plot_tbl <- approvactiv_tbl %>%
+  gather('label', 'value', -quarter)
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = quarter, y = value)) +
+  facet_grid(rows = vars(label), scales = 'free_y') +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Amount") +
+  scale_x_yearqtr() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Building Activity Data from Australian Government')
+```
+
+
+
+### CRAN Package Downloads Data
+
+An interesting dataset is the daily count of package downloads from CRAN. This
+data is easy to obtain via use of the package `cranlogs`, which gives us use
+of the `cran_downloads()` function.
+
+For this workshop, we will look at some of the main packages that comprise
+the 'tidyverse', as well as the total number of downloads from CRAN.
+
+```{r download_cran_data, echo=TRUE}
+cran_data_file <- 'data/cran_download_data.csv'
+
+if(file.exists(cran_data_file)) {
+  cran_data_tbl <- read_csv(cran_data_file)
+} else {
+  cran_pkgs <- c('dplyr', 'tidyr', 'ggplot2', 'lubridate', 'stringr', 'tibble',
+                 'broom', 'jsonlite', 'purrr', 'readr', 'tidyquant')
+    
+
+  cran_data_tbl <- retrieve_cran_download_data(cran_pkgs, '2014-01-01', '2018-12-31')
+  
+  cran_data_tbl %>% write_csv(path = cran_data_file)
+}
+
+
+cran_data_tbl %>% glimpse()
+#cran_data_tbl %>% summary()
+```
+
+First we construct a simple line plot of the download counts, facetted by
+package.
+
+```{r plot_cran_downloads, echo=TRUE}
+ggplot(cran_data_tbl) +
+  geom_line(aes(x = date, y = count)) +
+  facet_wrap(vars(package), scales = 'free_y') +
+  expand_limits(y = 0) +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Facetted Lineplots of CRAN Daily Downloads')
+```
+
+Not all packages have download data as some packages were created after the
+start of our observation period. This manifests as zero counts for that
+package. We discuss these issues later on in the workshop.
+
+
+Combining Time Series {data-navmenu="Introduction"}
+==========================================
+column {.tabset}
+---------------------------------------
+Useful insights are often gained from combining different datasets together.
+
+Looking at our datasets, one possible interesting relationship is that between
+energy production and airline passengers -- it is reasonable to expect that
+both of these quantities will be related as they are related to the overall
+health and size of the economy.
+
+A major benefit of using tidy tools for time series is to make such data
+manipulation and arrangement simple: combining datasets is simply a matter
+of using the two-table joins.
+
+To illustrate, we combine the Air Passenger data with the Australian economic
+data, using the following code. Note that we rename the air passenger data
+at the end to make it more meaningful and useful.
+
+
+```{r combining_airpassengers_australia_data, echo=TRUE}
+ap_econ_combined_tbl <- airpassengers_tbl %>%
+  left_join(cbe_tbl, by = 'month') %>%
+  filter(complete.cases(.)) %>%
+  rename(air = value)
+
+
+ap_econ_combined_tbl %>% glimpse()
+#ap_econ_combined_tbl %>% summary()
+```
+
+We return to this dataset later in the workshop.
+
+
+# Manipulation of Time Series Data
+
+Much like all data, it is rate to get time-series exactly in the format we
+want for analysis. For various reasons, we may want to analyse transformations
+or aggregations of this data.
+
+Much like feature engineering and variable selection, this process can be
+more art than science - there are no hard and fast rules, merely principles
+and rules-of-thumb.
+
+The last few years in particular have seen the development of a number of
+tools to aid us with the analysis of time series along 'tidy' principles. In
+particular, we will focus on the use of `tidyquant` - a package aimed at
+analysing financial data, but which is also very useful for time series.
+
+
+## Aggregating Data {data-navmenu="Introduction"}
+==========================================
+column {.tabset}
+---------------------------------------
+
+From a conceptual point of view, aggregating time series is the most
+straightforward - we group the data by longer periods of time and aggregate
+each individual 'bucket' of data as desired or required.
+
+
+### Single Statistics
+
+As an example of this, suppose we wish to look at the air passenger data as an
+annual sum for each year. Our data is monthly, so we need to aggregate this
+data into annual numbers.
+
+```{r aggregate_ap_data_annual, echo=TRUE}
+ap_yearly_dplyr_tbl <- airpassengers_tbl %>%
+  group_by(year = month %>% format('%Y') %>% as.numeric()) %>%
+  summarise(ann_total = sum(value))
+
+
+ap_yearly_dplyr_tbl %>% glimpse()
+#ap_yearly_dplyr_tbl %>% summary()
+```
+
+The above transformation was straightforward using existing `dplyr`
+functionality, but we can also use routines provided for by `tidyquant` and its
+function `tq_transmute`:
+
+
+```{r aggregate_ap_annual_transmute, echo=TRUE}
+ap_yearly_tidyquant_tbl <- airpassengers_tbl %>%
+  tq_transmute(
+    select     = value,
+    mutate_fun = apply.yearly,
+    FUN        = sum,
+    na.rm      = TRUE,
+    col_rename = 'ann_total'
+  ) %>%
+  mutate(year = month %>% format('%Y') %>% as.numeric())
+
+
+ap_yearly_tidyquant_tbl %>% glimpse()
+#ap_yearly_tidyquant_tbl %>% summary()
+```
+
+We can now look at a lineplot for this new time-series of annual totals. This
+gives us an idea of the overall trend in the data.
+
+
+```{r aggregate_ap_data_annual_lineplot, echo=TRUE}
+ggplot(ap_yearly_tidyquant_tbl) +
+  geom_line(aes(x = year, y = ann_total)) +
+  expand_limits(y = 0) +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Lineplot of the Annual Air Passenger Totals')
+```
+
+#### Exercises
+
+  1. Aggregate the Maine unemployment data into yearly totals.
+  1. Create the relevant lineplots to check this data for trends and patterns.
+  1. Aggregate the CBE data into yearly totals.
+  1. Create plots of this data to check for trends.
+
+
+### Multiple Statistics
+
+Should we need multiple statistics in our output, we implement this by
+writing a custom function that outputs the statistics we require.
+
+```{r aggregate_ap_annual_transmute_custom, echo=TRUE}
+custom_stats_func <- function(x, na.rm = TRUE, ...) {
+  c(
+    sum    = sum(x, na.rm = na.rm),
+    mean   = mean(x, na.rm = na.rm),
+    sd     = sd(x, na.rm = na.rm),
+    median = median(x, na.rm = na.rm),
+    q25    = quantile(x, na.rm = na.rm, probs = 0.25, names = FALSE),
+    q75    = quantile(x, na.rm = na.rm, probs = 0.75, names = FALSE)
+  )
+}
+
+
+ap_yearly_tidyquant_custom_tbl <- airpassengers_tbl %>%
+  tq_transmute(
+    select     = value,
+    mutate_fun = apply.yearly,
+    FUN        = custom_stats_func,
+    na.rm      = TRUE
+  ) %>%
+  mutate(year = month %>% format('%Y') %>% as.numeric())
+
+
+ap_yearly_tidyquant_custom_tbl %>% glimpse()
+# ap_yearly_tidyquant_custom_tbl %>% summary()
+```
+
+
+#### Exercises
+
+  1. Repeat the aggregation shown using the Maine unemployment data
+  1. Repeat the aggregation shown using the CBE data.
+  1. Create a custom function to calculate mean, sd, skew and kurtosis
+
+
+## Rolling Functions {data-navmenu="Introduction"}
+==========================================
+column {.tabset}
+---------------------------------------
+
+Another common transformation of time-series is to apply a function over a
+fixed rolling window of data.
+
+Note that rolling functions different conceptually from aggregates as they
+are not calculated over disjoint subsets of the data: the output is at the
+same time period as the original data.
+
+Because of this difference we use a different function from `tidyquant` to
+execute this calculation: `tq_mutate()`:
+
+
+### Moving Averages
+
+A common rolling function is the *moving average*: we calculate the average
+value of the time series over a fixed window of data.
+
+```{r rolling_ap_sixmonth_mutate, echo=TRUE}
+ap_rollmean_sixmonth_tbl <- airpassengers_tbl %>%
+  tq_mutate(
+    # tq_mutate args
+    select     = value,
+    mutate_fun = rollapply, 
+    # rollapply args
+    width      = 6,
+    align      = "right",
+    FUN        = mean,
+    # mean args
+    na.rm      = TRUE,
+    # tq_mutate args
+    col_rename = "mean_6m"
+  )
+
+
+ap_rollmean_sixmonth_tbl %>% glimpse()
+#ap_rollmean_sixmonth_tbl %>% summary()
+```
+
+We compare the two values by plotting the original time series against its
+moving average.
+
+
+```{r rolling_ap_sixmonth_plot, echo=TRUE}
+plot_tbl <- ap_rollmean_sixmonth_tbl %>%
+  rename(orig = value) %>%
+  gather('label', 'value', -month)
+
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = label)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Total') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Comparison Plot of the Air Passenger Counts')
+```
+
+Note that the moving-average series does not start at the same timestamp as
+the original dataset size is reduced by the windowing function.
+
+We can add multiple moving averages to a time series by chaining a series of
+`tq_mutate()` calls together.
+
+
+```{r rolling_ap_multiwindow, echo=TRUE}
+ap_rollmean_multi_tbl <- airpassengers_tbl %>%
+  tq_mutate(
+    # tq_mutate args
+    select     = value,
+    mutate_fun = rollapply,
+    # rollapply args
+    width      = 6,
+    align      = "right",
+    FUN        = mean,
+    # mean args
+    na.rm      = TRUE,
+    # tq_mutate args
+    col_rename = "mean_6m"
+  ) %>%
+  tq_mutate(
+    # tq_mutate args
+    select     = value,
+    mutate_fun = rollapply, 
+    # rollapply args
+    width      = 12,
+    align      = "right",
+    FUN        = mean,
+    # mean args
+    na.rm      = TRUE,
+    # tq_mutate args
+    col_rename = "mean_12m"
+  )
+  
+
+ap_rollmean_multi_tbl %>% glimpse()
+ap_rollmean_multi_tbl %>% summary()
+```
+
+As before, we now create a lineplot of the three values to show the effect of
+the different window sizes.
+
+```{r rolling_ap_multi_plot, echo=TRUE}
+plot_tbl <- ap_rollmean_multi_tbl %>%
+  rename(orig = value) %>%
+  gather('label', 'value', -month)
+
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = label)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Total') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Comparison Plot of the Air Passenger Counts')
+```
+
+The twelve month time series is shorter than the six month series as it has
+a wider calculation window.
+
+Any sort of other windowing functions can be applied, including the standard
+deviation, allowing us to include a range of possible values.
+
+
+```{r rolling_ap_ribbon, echo=TRUE}
+ribbon_func <- function(x, na.rm = TRUE, ...) {
+  mu    <- mean(x, na.rm = na.rm)
+  sigma <- sd(x, na.rm = na.rm)
+  
+  lower <- mu - 2 * sigma
+  upper <- mu + 2 * sigma
+  
+  return(c(mu = mu, l2sd = lower, u2sd = upper))
+}
+
+
+ap_roll_ribbon_tbl <- airpassengers_tbl %>%
+  tq_mutate(
+    # tq_mutate args
+    select     = value,
+    mutate_fun = rollapply, 
+    # rollapply args
+    width      = 6,
+    align      = "right",
+    by.column  = FALSE,
+    FUN        = ribbon_func,
+    # mean args
+    na.rm      = TRUE
+  )
+  
+
+ap_roll_ribbon_tbl %>% glimpse()
+ap_roll_ribbon_tbl %>% summary()
+```
+
+We now plot the original data against the moving average and the mean.
+
+
+```{r plot_ap_6m_ribbon_data, echo=TRUE}
+ggplot(ap_roll_ribbon_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  geom_line(aes(x = month, y = mu), colour = 'red') +
+  geom_ribbon(aes(x = month, ymin = l2sd, ymax = u2sd),
+              colour = 'grey', alpha = 0.25) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Total') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Ribbon Plot of the Air Passenger Counts (6 month window)')
+```
+
+
+We now repeat this process with using a twelve-month window for the data.
+
+```{r rolling_ap_12m_ribbon, echo=TRUE}
+ap_roll_12m_ribbon_tbl <- airpassengers_tbl %>%
+  tq_mutate(
+    # tq_mutate args
+    select     = value,
+    mutate_fun = rollapply, 
+    # rollapply args
+    width      = 12,
+    align      = "right",
+    by.column  = FALSE,
+    FUN        = ribbon_func,
+    # mean args
+    na.rm      = TRUE
+  )
+  
+
+ap_roll_12m_ribbon_tbl %>% glimpse()
+ap_roll_12m_ribbon_tbl %>% summary()
+```
+
+Having constructed the data, we once again create a ribbon plot with these
+quantities.
+
+```{r plot_ap_12m_ribbon_data, echo=TRUE}
+ggplot(ap_roll_12m_ribbon_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  geom_line(aes(x = month, y = mu), colour = 'red') +
+  geom_ribbon(aes(x = month, ymin = l2sd, ymax = u2sd),
+              colour = 'grey', alpha = 0.25) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Total') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Ribbon Plot of the Air Passenger Counts (12 month window)')
+```
+
+
+#### Exercises
+
+  1. Construct a 3 month moving average for the passenger data and compare it
+     to the 6 and 12 month values.
+  1. Calculate the 6 month and 12 month rolling average values for the Maine
+     unemployment data.
+  1. Construct the ribbon plot for the Maine unemployment data.
+  1. Construct moving average data for the CBE dataset. This process may be
+     made easier by reshaping the data.
+
+
+### Differences
+
+Another common transformation of the data is to take the 'first differences'
+of the values, i.e. we convert the time series of values into one of
+differences. We discuss the reasons for this later on -- for now we focus on
+the mechanics of creating first differences.
+
+
+```{r ap_firstdiff_mutate, echo=TRUE}
+ap_firstdiff_tbl <- airpassengers_tbl %>%
+  mutate(diff = value - lag(value, n = 1))
+
+
+ap_firstdiff_tbl %>% glimpse()
+ap_firstdiff_tbl %>% summary()
+```
+
+Having calculated the differences, we now produce a lineplot of those values.
+
+```{r ap_firstdiff_plot, echo=TRUE}
+plot_tbl <- ap_firstdiff_tbl %>%
+  rename(count = value) %>%
+  gather('series', 'value', -month)
+
+
+ggplot(plot_tbl) +
+  geom_line(aes(x = month, y = value, colour = series)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Value') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Plot of the Air Passenger Counts and First Differences')
+```
+
+As we see with this plot, the first differences of the passenger data does not
+contain a trend.
+
+
+#### Exercises
+
+  1. Calculate the first differences for the Maine unemployment data.
+  1. Create a lineplot of this data to check for its value.
+  1. Calculate the first differences for the CBE data.
+  1. Create lineplots for the CBE differences.
+  1. Using the `lag()` function with the Air Passenger data, calculate the
+     percentage changes data instead of the arithmetic changes.
+  1. Construct the lineplot for the percentage change values.
+  
+  
+
+# Exploratory Data Analysis of Time Series
+
+The first step in all exploratory analysis is simple visualisation: simple
+lines plots such as those we have seen are our starting point. The human
+brain is excellent at pattern recognition, so a simple plot often guides our
+analysis more effectively than a suite of numerical diagnostics.
+
+Rather than discuss different techniques, we will explore our sample data as a
+way to illustrate some ways of initially exploring the datasets.
+
+
+## Air Passenger {data-navmenu="Case Studies"}
+==========================================
+column {.tabset}
+---------------------------------------
+
+We start with the air passenger data, and remind ourselves of the basic
+structure of the data.
+
+```{r airpassengers_explore_struct, echo=TRUE}
+airpassengers_tbl %>% glimpse()
+airpassengers_tbl %>% summary()
+```
+
+
+### Raw Data
+
+We remind ourselves of the lineplot of the raw data.
+
+```{r plot_airpassenger_exploration, echo=TRUE}
+ggplot(airpassengers_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  xlab('Date') +
+  ylab('Passenger Count') +
+  expand_limits(y = 0) +
+  scale_x_yearmon() +
+  ggtitle('Plot of Air Passenger Time Series')
+```
+
+This plot suggests a strong seasonal effect as well as a trend so this is the
+first thing to investigate.
+
+It may help if we can add points to the plot to indicate the months, so we add
+points for the month of June to help us identify years.
+
+```{r plot_airpassenger_exploration_dec_points, echo=TRUE}
+ap_jun_tbl <- airpassengers_tbl %>% filter(format(month, '%m') == '06')
+
+ggplot(airpassengers_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  geom_point(aes(x = month, y = value), data = ap_jun_tbl, size = 2) +
+  expand_limits(y = 0) +
+  xlab('Date') +
+  ylab('Passenger Count') +
+  scale_x_yearmon() +
+  ggtitle('Plot of Air Passenger Time Series')
+```
+
+
+
+To look into trends, we have a number of options: we could look at yearly
+sums or averages, or we could look at moving averages.
+
+```{r plot_ap_yearly_totals, echo=TRUE}
+ggplot(ap_yearly_tidyquant_tbl) +
+  geom_line(aes(x = year, y = ann_total)) +
+  expand_limits(y = 0) +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Lineplot of the Annual Air Passenger Totals')
+```
+
+
+
+
+One way to investigate the seasonality in the dataset is to construct a boxplot
+of the passenger counts, grouping by month.
+
+```{r plot_ap_monthly_boxplots, echo=TRUE}
+plot_tbl <- airpassengers_tbl %>%
+  mutate(cal_month = format(month, '%m'))
+
+ggplot(plot_tbl) +
+  geom_boxplot(aes(x = cal_month, y = value)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Count') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Boxplot of the Air Passenger Counts')
+```
+
+We can see some aspects of the data seasonality in this boxplot, but the
+multiplicative nature of the plots means the seasonal trends is obscured a
+little.
+
+### First Differences
+
+We also produce a similar boxplot, but this time looking at the first
+differences.
+
+```{r plot_ap_diffs_monthly_boxplots, echo=TRUE}
+plot_tbl <- ap_firstdiff_tbl %>%
+  mutate(cal_month = format(month, '%m'))
+
+ggplot(plot_tbl) +
+  geom_boxplot(aes(x = cal_month, y = diff)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Passenger Count Changes') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Boxplot of the First Differences of the Air Passenger Counts')
+```
+
+The seasonality in the data comes through much stronger with this plot. We see
+much bigger monthly effects.
+
+
+### Percentage Changes
+
+To look into multiplicative effects we check the percentage changes from month
+to month.
+
+
+```{r ap_perc_change_explore_struct, echo=TRUE}
+ap_perc_change_tbl <- airpassengers_tbl %>%
+  mutate(cal_month   = format(month, '%m'),
+         perc_change = value / lag(value, n = 1) - 1)
+
+
+ap_perc_change_tbl %>% glimpse()
+ap_perc_change_tbl %>% summary()
+```
+
+Having looked at the data and the column, we now look at some simple lineplots
+as before.
+
+```{r plot_ap_perc_change_lineplot, echo=TRUE}
+ggplot(ap_perc_change_tbl) +
+  geom_line(aes(x = month, y = perc_change)) +
+  expand_limits(y = 0) +
+  xlab('Date') +
+  ylab('Percentage Change') +
+  scale_x_yearmon() +
+  ggtitle('Lineplot of the Percentage Changes of the Air Passenger Counts')
+```
+
+Much like the arithmetic differences, the percentage changes are centred around
+zero, so now we can look at a boxplot of them.
+
+```{r plot_ap_perc_changes_monthly_boxplots, echo=TRUE}
+ggplot(ap_perc_change_tbl) +
+  geom_boxplot(aes(x = cal_month, y = perc_change)) +
+  xlab('Month') +
+  ylab('Percentage Changes') +
+  scale_x_yearmon() +
+  ggtitle('Boxplot of the Percentage Changes of the Air Passenger Counts')
+```
+
+
+## Maine Unemployment {data-navmenu="Case Studies"}
+==========================================
+column {.tabset}
+---------------------------------------
+
+We now explore the Maine unemployment data.
+
+As before, we look at the raw data, the first differences and the percentage
+changes.
+
+```{r maine_data_exploration, echo=TRUE}
+maine_explore_tbl <- maine_tbl %>%
+  mutate(cal_month   = format(month, '%m'),
+         diff        = value - lag(value, n = 1),
+         perc_change = value / lag(value, n = 1) - 1
+         )
+
+
+maine_explore_tbl %>% glimpse()
+maine_explore_tbl %>% summary()
+```
+
+
+### Raw Data
+
+We start by the standard lineplot of the values.
+
+```{r plot_maine_lineplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_line(aes(x = month, y = value)) +
+  expand_limits(y = 0) +
+  xlab('Time') +
+  ylab('Maine Unemployment Count (thousands)') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Lineplot of the Maine Unemployment Data')
+```
+
+We do not see a trend in this data but the data does seem to have strong
+seasonal patterns.
+
+To investigate the seasonality we construct the monthly boxplots from the raw
+data. Employment is often seasonal in nature - for example, retail is very
+busy towards Christmas each year. As such, we expect to see a large seasonal
+component in this data.
+
+```{r plot_maine_monthly_boxplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_boxplot(aes(x = cal_month, y = value)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Maine Unemployment Count (thousands)') +
+  scale_x_yearmon() +
+  scale_y_continuous(labels = comma) +
+  ggtitle('Monthly Boxplot of the Maine Unemployment Data')
+```
+
+We see definite changes over the months, though the effect does not seem as
+pronounced here as it was for the airline passenger counts.
+
+### First Differences
+
+We now look at first differences for the unemployment data, and start with the
+line plot.
+
+```{r plot_maine_diff_lineplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_line(aes(x = month, y = diff)) +
+  expand_limits(y = 0) +
+  xlab('Time') +
+  ylab('Maine Unemployment Count Differences') +
+  scale_x_yearmon() +
+  ggtitle('Lineplot of the Differences in Maine Unemployment Data')
+```
+
+The original data does not exhibit a strong trend, and the first differences
+are similar.
+
+```{r plot_maine_diff_monthly_boxplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_boxplot(aes(x = cal_month, y = diff)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Maine Unemployment Count Differences') +
+  scale_x_yearmon() +
+  ggtitle('Monthly Boxplot of the Maine Unemployment Data')
+```
+
+We see strong seasonal differences in the monthly data.
+
+
+### Percentage Changes
+
+We look at the lineplot of the percentage changes next.
+
+```{r plot_maine_perc_change_lineplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_line(aes(x = month, y = perc_change)) +
+  expand_limits(y = 0) +
+  xlab('Time') +
+  ylab('Maine Unemployment Count Percentage Changes') +
+  scale_x_yearmon() +
+  ggtitle('Lineplot of the Percentage Changes in Maine Unemployment Data')
+```
+
+As for the differences, no major trends or patterns emerge from this plot.
+
+We now look for seasonal patterns in the percentage changes.
+
+```{r plot_maine_perc_change_monthly_boxplot, echo=TRUE}
+ggplot(maine_explore_tbl) +
+  geom_boxplot(aes(x = cal_month, y = perc_change)) +
+  expand_limits(y = 0) +
+  xlab('Month') +
+  ylab('Maine Unemployment Count Percentage Changes') +
+  scale_x_yearmon() +
+  ggtitle('Monthly Boxplot of the Percentage Changes in Maine Unemployment Data')
+```
+
+
+
+# Time Series Decomposition
+
+Many time series are dominated by trends or seasonal effects, and we can
+create fairly simple models based on these two components. The first of these,
+the *additive decompositional model*, is just the sum of these effects, with
+the residual component being treated as random:
+
+$$
+x_t = m_t + s_t + z_t,
+$$
+
+where, at any given time $t$,
+
+\begin{eqnarray*}
+x_t && \text{is the observed value} \\
+m_t && \text{is the trend} \\
+s_t && \text{is the seasonal component} \\
+z_t && \text{is the error term}
+\end{eqnarray*}
+
+
+It is worth noting that, in general, the error terms will be a correlated
+sequence of values, something we will account for and model later.
+
+In other cases, we could have a situation where the seasonal effect
+increases as the trend increases, modeling the values as:
+
+$$
+x_t = m_t s_t + z_t.
+$$
+
+Other options also exist, such as modeling the log of the observed values,
+which does cause some non-trivial modeling issues, such as biasing any
+predicted values for the time series.
+
+Various methods are used for estimating the trend, such as taking a
+*moving average* of the values, which is a common approach.
+
+
