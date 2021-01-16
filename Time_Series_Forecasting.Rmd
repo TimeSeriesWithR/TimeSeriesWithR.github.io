@@ -1,0 +1,341 @@
+
+
+## Time Series Forecasting
+
+Our main objective in forecasting is to estimate the value of a future
+quantity, $x_{n+k}$, given past values ${x_1, x_2, ..., x_n}$. We assume no
+seasonal or trend effects, or that such effects are removed from the data.
+
+We assume that the underlying mean of the data is $\mu_t$, and that the value
+$x_t$ changes from timestep to timestep, but this change is random.
+
+Our model can be expressed as
+
+$$
+x_t = \mu_t + w_t,
+$$
+
+where
+
+\begin{eqnarray*}
+\mu_t &=&     \text{non-stationary mean of the process at time } t \\
+w_t   &\sim&  \mathcal{N}(0, \sigma) \text{ (i.i.d)}
+\end{eqnarray*}
+
+
+### EWMA Models
+
+We let $a_t$ be our estimate of $\mu_t$, and can define the
+*exponentially-weighted moving average (EWMA)*, $a_t$ to be
+
+$$
+a_t = \alpha x_t + (1 - \alpha) \, a_{t-1}, \;\;\; 0 \leq \alpha \leq 1.
+$$
+
+The value of $\alpha$ controls the amount of smoothing, as is referred
+to as the *smoothing parameter*. An alternative name for this time-series model
+is *simple exponential smoothing (SES)*.
+
+The main package we use for forecasting in R is the `forecast` package,
+created by Rob Hyndman. `forecast` contains a convenient framework for
+performing most of the task required for time series forecast. We then use
+the `sweep` package to bring the outputs into a tidy format where appropriate.
+
+#### Air Passenger Data
+
+We start using the EWMA model on the Air Passenger data.
+
+As a simple approach for testing our models, we remove the final year from the
+air passenger data and produce forecasts for those, comparing them to the 
+actual values.
+
+```{r ap_ewma_first, echo=TRUE}
+ap_ewma_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  ets(model = 'ANN')
+
+ap_ewma_fit %>% sw_tidy()
+ap_ewma_fit %>% sw_glance()
+```
+
+Now that we have fit our model we can use the `forecast()` function to produce
+forecasts for future times, as well as plotting them.
+
+```{r ap_produce_forecasts, echo=TRUE}
+ap_ewma_forecast <- ap_ewma_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_ewma_forecast_tbl <- ap_ewma_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ggplot(ap_ewma_forecast_tbl) +
+  geom_line  (aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Forecast for Air Passengers with EWMA Model')
+```
+
+We see that the EWMA model is not effective in terms prediction.
+
+We can compare the fits against the data directly with `sw_augment()`:
+
+```{r ap_ewma_sweep_augment, echo=TRUE}
+ap_ewma_augment_tbl <- ap_ewma_fit %>%
+  sw_augment(rename_index = 'month')
+
+
+ggplot(ap_ewma_augment_tbl) +
+  geom_line(aes(x = month, y = .actual)) +
+  geom_line(aes(x = month, y = .fitted), colour = 'red') +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Forecast for Air Passengers with EWMA Model')
+```
+
+
+
+
+#### Maine Unemployment
+
+We now try the EWMA model on the Maine Unemployment data to see if this model
+works any better.
+
+```{r maine_ewma_model, echo=TRUE}
+maine_ewma_fit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  ets(model = 'ANN')
+
+maine_ewma_fit %>% sw_tidy()
+maine_ewma_fit %>% sw_glance()
+```
+
+As before, having fit the EWMA model we now produce forecasts.
+
+```{r maine_produce_forecasts, echo=TRUE}
+maine_ewma_forecast <- maine_ewma_fit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_ewma_forecast_tbl <- maine_ewma_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ggplot(maine_ewma_forecast_tbl) +
+  geom_line  (aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Forecast for Maine Unemployment Data with EWMA Model')
+```
+
+In some cases, with such a simple model we may prefer to set values for
+$\alpha$ directly rather than fitting it to the data. We do this by passing
+the chosen parameters directly into the fitting routine:
+
+```{r maine_ewma_model_set_params, echo=TRUE}
+maine_ewma_paramfit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  ets(model = 'ANN', alpha = 0.8)
+
+maine_ewma_paramfit %>% sw_tidy()
+maine_ewma_paramfit %>% sw_glance()
+```
+
+We now produce forecasts using the set EWMA parameter to see how they compare.
+
+```{r maine_produce_paramfit_forecasts, echo=TRUE}
+maine_ewma_paramfit_forecast <- maine_ewma_paramfit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_ewma_paramfit_forecast_tbl <- maine_ewma_paramfit_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ggplot(maine_ewma_paramfit_forecast_tbl) +
+  geom_line  (aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Forecast for Maine Unemployment Data with Non-Fitted EWMA Model')
+```
+
+
+### Holt-Winters Model
+
+The Holt-Winters method generalises this concept, allowing for trends
+and seasonal effects. The equations that govern this model for
+seasonal period, $p$, are given by
+
+\begin{eqnarray*}
+a_t &=& \alpha (x_t - s_{t-p}) + (1 - \alpha) (a_{t-1} - b_{t-1}),\\
+b_t &=& \beta  (a_t - a_{t-1}) + (1 - \beta)  b_{t-1},\\
+s_t &=& \gamma (x_t - a_t)     + (1 - \gamma) s_{t-p},
+\end{eqnarray*}
+
+where
+
+\begin{eqnarray*}
+a_t && \text{is the estimated level at time $t$},\\
+b_t && \text{is the estimated slope at time $t$},\\
+s_t && \text{is the estimated seasonal effect at time $t$},\\
+\alpha, \beta, \gamma && \text{are smoothing parameters}
+\end{eqnarray*}
+
+Within the framework of the `forecast` package, we have an additive trend with
+an additive seasonal component and additive errors. This corresponds to using
+the 'AAA' `ets()` model
+
+
+#### Air Passenger Data
+
+We start with the Air Passenger data, and use the 'AAA' model within `ets()`.
+
+```{r fit_holtwinters_ts_model, echo=TRUE}
+ap_hw_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  ets(model = 'AAA')
+
+ap_hw_fit %>% sw_tidy()
+ap_hw_fit %>% sw_glance()
+
+
+ap_hw_forecast <- ap_hw_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_hw_forecast_tbl <- ap_hw_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ggplot(ap_hw_forecast_tbl) +
+  geom_line  (aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Forecast for Air Passengers with Holt-Winters Model')
+
+
+ap_hw_augment_tbl <- ap_hw_fit %>%
+  sw_augment(rename_index = 'month')
+
+ggplot(ap_hw_augment_tbl) +
+  geom_line(aes(x = month, y = .actual)) +
+  geom_line(aes(x = month, y = .fitted), colour = 'red') +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('sw_augment Output for Holt-Winters Model')
+```
+
+For this data the multiplicative trend and errors is not the most appropriate
+so we will refit this data with those changes.
+
+Rather than run through the full set of code again we run a more concise
+version of this code.
+
+```{r fit_ap_mult_hw, echo=TRUE}
+ap_hwmult_fit <- ap_train_tbl %>%
+  tk_ts(select = value, start = 1949, frequency = 12) %>%
+  ets(model = 'MAM')
+
+ap_hwmult_forecast <- ap_hwmult_fit %>%
+  forecast(h = 12, level = c(50, 80))
+
+ap_hwmult_forecast_tbl <- ap_hwmult_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+ap_hwmult_fit %>% sw_tidy()
+ap_hwmult_fit %>% sw_glance()
+
+ggplot(ap_hwmult_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Air Passengers Forecast for Multiplicative Holt-Winters Model')
+```
+
+
+#### Maine Unemployment Data
+
+We now try to fit our models with the Maine Unemployment data, repeating the
+process from before.
+
+```{r fit_maine_hw, echo=TRUE}
+maine_hw_fit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  ets(model = 'ANN')
+
+maine_hw_forecast <- maine_hw_fit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_hw_forecast_tbl <- maine_hw_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+maine_hw_fit %>% sw_tidy()
+maine_hw_fit %>% sw_glance()
+
+
+ggplot(maine_hw_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Additive Holt-Winters Model for the Maine Unemployment Data')
+```
+
+As before, we can try a multiplicative model.
+
+```{r fit_maine_hwmult, echo=TRUE}
+maine_hwmult_fit <- maine_train_tbl %>%
+  tk_ts(select = value, start = 1996, frequency = 12) %>%
+  ets(model = 'MAM')
+
+maine_hwmult_forecast <- maine_hwmult_fit %>%
+  forecast(h = 20, level = c(50, 80))
+
+maine_hwmult_forecast_tbl <- maine_hwmult_forecast %>%
+  sw_sweep(rename_index = 'month')
+
+
+maine_hwmult_fit %>% sw_tidy()
+maine_hwmult_fit %>% sw_glance()
+
+
+ggplot(maine_hwmult_forecast_tbl) +
+  geom_line(aes(x = month, y = value, colour = key)) +
+  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
+  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
+  expand_limits(y = 0) +
+  xlab("Date") +
+  ylab("Count") +
+  scale_x_yearmon() +
+  ggtitle('Multiplicative Holt-Winters Model for the Maine Unemployment Data')
+```
+
+We see that including a seasonal component into the model improves the
+predictions
+
