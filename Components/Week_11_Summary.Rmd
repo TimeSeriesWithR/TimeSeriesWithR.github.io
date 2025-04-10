@@ -1,0 +1,106 @@
+### **Lesson Plan: Week 11 - Cross-Correlation and Bivariate Processes**  
+**Course Focus:** Analyze the relationships between two time series datasets using cross-correlation functions (CCF) and explore bivariate time series models.
+
+---
+
+### **Class 1: Introduction to Bivariate Time Series**  
+**Learning Objectives:**  
+- Understand what bivariate time series are and why they matter.  
+- Learn how relationships between time series are analyzed.  
+
+**Content:**  
+1. **What Are Bivariate Time Series?**  
+   - Two time series observed simultaneously (e.g., stock prices and interest rates).  
+   - Importance in understanding dynamic relationships between variables.  
+2. **Applications of Bivariate Time Series Analysis**  
+   - Examples:  
+     - Economic indicators and financial markets.  
+     - Weather variables (temperature and precipitation).  
+3. **Hands-On with R:**  
+   - Explore bivariate datasets, such as economic or environmental time series.  
+   - Visualize both series over time to observe relationships.  
+
+**Activities:**  
+- Students load and plot bivariate time series data to observe trends and potential correlations.  
+
+**Outcomes:**  
+Students will gain an understanding of bivariate time series and their applications.
+
+---
+
+### **Class 2: Cross-Correlation Function (CCF)**  
+**Learning Objectives:**  
+- Learn how to compute and interpret the cross-correlation function.  
+- Understand lagged relationships between two time series.  
+
+**Content:**  
+1. **What Is Cross-Correlation?**  
+   - Definition: Measures the strength of association between two time series at different lags.  
+   - Positive and negative cross-correlation and their implications.  
+2. **Using Cross-Correlation in R**  
+   - Computing the cross-correlation function with `ccf()`.  
+   - Interpreting cross-correlation plots: lead and lag relationships.  
+3. **Hands-On with R:**  
+   - Compute the cross-correlation function for paired time series datasets.  
+   - Identify significant lags and interpret their meaning.  
+
+**Activities:**  
+- Students analyze provided time series data (e.g., temperature and electricity demand) to compute and interpret CCF plots.  
+
+**Outcomes:**  
+Students will learn to calculate and interpret the cross-correlation function to understand relationships between variables.
+
+---
+
+### **Class 3: Cross-Spectrum Analysis**  
+**Learning Objectives:**  
+- Understand frequency domain analysis for bivariate time series.  
+- Explore the concept of cross-spectrum and its components.  
+
+**Content:**  
+1. **What Is Cross-Spectrum Analysis?**  
+   - Cross-spectrum: Measures how two series interact in the frequency domain.  
+   - Key components: Co-spectrum and quadrature spectrum.  
+2. **Applications in Frequency Analysis**  
+   - Identifying shared periodicities in two time series.  
+   - Examples: Economic cycles or seasonal variations in environmental data.  
+3. **Hands-On with R:**  
+   - Compute and interpret cross-spectra using the `spectrum()` function and related tools.  
+
+**Activities:**  
+- Students analyze the frequency domain relationship of datasets, identifying common periodic patterns.  
+
+**Outcomes:**  
+Students will understand the role of cross-spectrum analysis and its application to bivariate time series.
+
+---
+
+### **Class 4: Practical Applications of Bivariate Analysis**  
+**Learning Objectives:**  
+- Apply bivariate analysis tools to real-world datasets.  
+- Integrate cross-correlation and cross-spectrum insights.  
+
+**Content:**  
+1. **Bivariate Analysis in Practice**  
+   - Select datasets relevant to economic, environmental, or financial applications.  
+   - Combine time and frequency domain insights for analysis.  
+2. **Hands-On with R:**  
+   - Analyze a chosen pair of time series from a provided dataset.  
+   - Compute cross-correlation and cross-spectrum.  
+   - Summarize relationships and potential predictive insights.  
+
+**Activities:**  
+- Students present their analyses of bivariate time series relationships, highlighting key insights.  
+
+**Outcomes:**  
+Students will integrate tools and techniques to conduct applied bivariate time series analysis.
+
+---
+
+### **Summary for Week 11**  
+At the end of Week 11, students will:  
+- Understand and calculate cross-correlation functions to identify lagged relationships between time series.  
+- Explore frequency domain relationships using cross-spectrum analysis.  
+- Apply bivariate analysis tools to real-world data for meaningful insights.
+
+Let me know if you'd like more details or examples for any of these classes!
