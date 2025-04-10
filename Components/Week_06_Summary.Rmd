@@ -1,0 +1,115 @@
+### **Lesson Plan: Week 6 - Integrated Models in Time Series Analysis**  
+**Course Focus:** Transforming non-stationary time series into stationary series through differencing and understanding integrated models.  
+
+---
+
+### **Class 1: Non-Stationarity and Differencing**  
+**Learning Objectives:**  
+- Understand what non-stationarity is and how it affects time series analysis.  
+- Learn the concept and application of differencing to achieve stationarity.  
+
+**Content:**  
+1. **Introduction to Non-Stationarity**  
+   - Characteristics of non-stationary time series (e.g., changing mean, increasing variance).  
+   - Examples of non-stationary processes (e.g., random walk, seasonal trends).  
+2. **Differencing**  
+   - First-order differencing: $Y_t - Y_{t-1}$.  
+   - Higher-order differencing (if needed): $\nabla^d Y_t$.  
+   - When and why differencing is required for stationarity.  
+3. **Hands-On with R:**  
+   - Load and plot non-stationary data (`plot.ts`).  
+   - Apply differencing with `diff()` function and visualize results.  
+   - Check stationarity using statistical tests (`adf.test` from the `tseries` package).  
+
+**Activities:**  
+- Students work with a dataset (e.g., monthly oil prices).  
+- Plot raw data, apply differencing, and confirm stationarity.  
+
+**Outcomes:**  
+Students will understand the importance of stationarity and be able to apply differencing techniques to real datasets.
+
+---
+
+### **Class 2: Integrated Models and Random Walks**  
+**Learning Objectives:**  
+- Recognize integrated models and random walk processes.  
+- Understand how differencing leads to stationarity in random walks.  
+
+**Content:**  
+1. **Integrated Models (ARIMA)**  
+   - Concept of integration in time series.  
+   - Relating differencing to the "I" in ARIMA models.  
+2. **Random Walk Process**  
+   - Definition: $Y_t = Y_{t-1} + e_t$.  
+   - Properties: Non-stationarity, increasing variance over time.  
+   - Achieving stationarity through differencing.  
+3. **Hands-On with R:**  
+   - Simulate a random walk with `arima.sim()`.  
+   - Apply first-order differencing to random walk data.  
+   - Visualize the transformation into a stationary process.
+
+**Activities:**  
+- Students simulate a random walk, visualize its properties, and transform it into a stationary time series.  
+
+**Outcomes:**  
+Students will understand integrated models and practice working with random walks in R.
+
+---
+
+### **Class 3: ARIMA Model Overview and Identification**  
+**Learning Objectives:**  
+- Explore the structure of ARIMA(p, d, q) models.  
+- Understand the Box-Jenkins approach for model identification.  
+
+**Content:**  
+1. **Structure of ARIMA Models**  
+   - Components: Auto-regressive (AR), Integration (I), and Moving Average (MA).  
+   - Example processes: ARIMA(1, 1, 0), ARIMA(0, 1, 1), etc.  
+2. **Model Identification**  
+   - Use of ACF/PACF plots for AR and MA components.  
+   - Diagnostic checks for differencing (stationarity, seasonality).  
+3. **Hands-On with R:**  
+   - Fit ARIMA models using `auto.arima()` (from the `forecast` package).  
+   - Evaluate ACF/PACF plots (`acf()`, `pacf()`) to identify suitable models.  
+   - Interpret model outputs and residual diagnostics.
+
+**Activities:**  
+- Students load a real-world dataset (e.g., financial or environmental time series).  
+- Apply `auto.arima()` to identify and fit an initial ARIMA model.  
+
+**Outcomes:**  
+Students will understand ARIMA model components and begin working with them in R.
+
+---
+
+### **Class 4: Model Diagnostics and Criticism**  
+**Learning Objectives:**  
+- Perform model diagnostics and evaluate ARIMA model performance.  
+- Assess residuals and goodness-of-fit criteria.  
+
+**Content:**  
+1. **Model Diagnostics**  
+   - Residual analysis: White noise assumptions, randomness, and independence.  
+   - Residual plots: Visualizing residuals (`plot.ts` and `checkresiduals()` from `forecast`).  
+2. **Criticism and Refinement**  
+   - Evaluating model fit using AIC, BIC, and other statistical measures.  
+   - Revisiting model assumptions and refining differencing or parameter selection.  
+3. **Hands-On with R:**  
+   - Diagnostic residual analysis (`Ljung-Box Test` and `checkresiduals()`).  
+   - Compare multiple models using AIC/BIC.  
+
+**Activities:**  
+- Students analyze residual plots of their fitted models and refine ARIMA parameters.  
+
+**Outcomes:**  
+Students will critically evaluate ARIMA models and understand the iterative nature of time series modeling.
+
+---
+
+### **Summary for Week 6**  
+By the end of Week 6, students will:
+- Transform non-stationary time series data into stationary processes.  
+- Understand random walk and integrated models.  
+- Use R to fit, diagnose, and refine ARIMA models for applied analysis.  
+
+Would you like more details on any specific class or topics?
