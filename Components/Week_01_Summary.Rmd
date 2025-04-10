@@ -1,0 +1,104 @@
+### **Lesson Plan: Week 1 - Introduction to Time Series Analysis**  
+**Course Focus:** Familiarize students with the fundamentals of time series data, its components, and how to visualize and interpret such data using R.
+
+---
+
+### **Class 1: Components of Time Series**  
+**Learning Objectives:**  
+- Understand what constitutes a time series.  
+- Identify the key components: trend, seasonality, and random variation.
+
+**Content:**  
+1. **Introduction to Time Series**  
+   - Definition and examples of time series data (e.g., stock prices, monthly temperature).  
+   - Importance of time series analysis in forecasting and decision-making.  
+2. **Components of Time Series**  
+   - Trend: Long-term movement in data.  
+   - Seasonality: Regular patterns over specific intervals.  
+   - Noise/Random variation: Irregular fluctuations.  
+3. **Hands-On with R:**  
+   - Loading time series datasets (`AirPassengers`, `nottem`).  
+   - Visualizing data with `plot.ts()` and basic exploratory techniques.  
+
+**Activities:**  
+- Students work on identifying components in provided datasets using plots and discussions.  
+
+**Outcomes:**  
+Students will understand the key components of time series data and their relevance.
+
+---
+
+### **Class 2: Time Series Data Structure in R**  
+**Learning Objectives:**  
+- Learn how to load, structure, and handle time series data in R.  
+- Explore properties of time series data.
+
+**Content:**  
+1. **Time Series Data in R**  
+   - Introduction to `ts` objects in R.  
+   - Recognizing the importance of start and frequency attributes (e.g., monthly vs. quarterly).  
+2. **Exploring Datasets**  
+   - Examples: `AirPassengers`, `co2`, custom datasets.  
+   - Exploring summary statistics, time indices, and data types.  
+3. **Hands-On with R:**  
+   - Creating a `ts` object from raw data.  
+   - Subsetting and querying time series data.  
+
+**Activities:**  
+- Students convert tabular data into time series objects and explore its properties.  
+
+**Outcomes:**  
+Students will be comfortable creating and handling time series objects in R.
+
+---
+
+### **Class 3: Visualizing Time Series Data**  
+**Learning Objectives:**  
+- Develop skills for effective visualization of time series data.  
+- Interpret visual patterns to understand trends and seasonality.
+
+**Content:**  
+1. **Visualization Techniques**  
+   - Basic line plots (`plot.ts`).  
+   - Adding elements to plots (titles, axes labels).  
+   - Highlighting trends and patterns through smoothing.  
+2. **Hands-On with R:**  
+   - Create time series visualizations using `plot.ts`.  
+   - Apply basic transformations for trend visualization (e.g., rolling averages).  
+   - Experiment with `ggplot2` for advanced visuals.  
+
+**Activities:**  
+- Students produce multiple visualizations for a chosen dataset and present their observations.  
+
+**Outcomes:**  
+Students will understand how to interpret and visually analyze time series data.
+
+---
+
+### **Class 4: Practical Introduction to Seasonal Patterns**  
+**Learning Objectives:**  
+- Explore seasonal components in time series data.  
+- Analyze patterns and their implications for modeling and forecasting.
+
+**Content:**  
+1. **What Are Seasonal Patterns?**  
+   - Identifying regular intervals (e.g., monthly sales, daily temperature).  
+   - Understanding additive and multiplicative seasonality.  
+2. **Hands-On with R:**  
+   - Seasonal decomposition using `decompose()` and `stl()`.  
+   - Isolating seasonal patterns in data (`AirPassengers`).  
+   - Analyzing deseasonalized data for trends.  
+
+**Activities:**  
+- Students compare seasonal decomposition outputs for different datasets and discuss observations.  
+
+**Outcomes:**  
+Students will gain practical exposure to identifying and analyzing seasonal patterns.
+
+---
+
+### **Summary for Week 1**  
+By the end of Week 1, students will:
+- Identify the components of time series data.  
+- Load, structure, and visualize time series datasets using R.  
+- Analyze seasonal patterns for implications in forecasting.  
