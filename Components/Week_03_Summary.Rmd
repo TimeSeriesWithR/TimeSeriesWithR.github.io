@@ -1,0 +1,104 @@
+### **Lesson Plan: Week 3 - Seasonality and Deseasonalizing Time Series**  
+**Course Focus:** Analyze the seasonal patterns in time series data and learn techniques to remove seasonality for clearer trend and residual analysis.
+
+---
+
+### **Class 1: Understanding Seasonality in Time Series**  
+**Learning Objectives:**  
+- Understand what seasonality means in time series data.  
+- Learn to distinguish seasonal patterns from trends and random noise.  
+
+**Content:**  
+1. **Defining Seasonality**  
+   - Regular, repeating patterns in data (e.g., yearly, monthly, weekly).  
+   - Examples: Retail sales, climate data, electricity usage.  
+2. **Additive vs. Multiplicative Seasonality**  
+   - Additive model: Seasonal effect remains constant.  
+   - Multiplicative model: Seasonal effect grows or shrinks proportionally to the trend.  
+3. **Hands-On with R:**  
+   - Visualize seasonal patterns using `plot.ts()` for datasets like `AirPassengers` and `nottem`.  
+   - Discuss how to identify repeating cycles visually.  
+
+**Activities:**  
+- Students explore datasets with clear seasonal patterns and compare additive and multiplicative seasonal effects.  
+
+**Outcomes:**  
+Students will understand the concept of seasonality and its significance in analyzing time series data.
+
+---
+
+### **Class 2: Seasonal Decomposition**  
+**Learning Objectives:**  
+- Learn techniques for decomposing time series into trend, seasonality, and residuals.  
+- Analyze decomposed data to isolate and understand seasonal effects.  
+
+**Content:**  
+1. **What Is Seasonal Decomposition?**  
+   - Decomposing time series into components: Trend, seasonal, and remainder.  
+   - Methods: Classical decomposition and STL (Seasonal and Trend decomposition using Loess).  
+2. **Hands-On with R:**  
+   - Apply decomposition techniques using `decompose()` (classical) and `stl()` (STL decomposition).  
+   - Visualize decomposition outputs and interpret components.  
+
+**Activities:**  
+- Students apply seasonal decomposition techniques to real-world datasets and discuss how trend and residual components change after decomposition.  
+
+**Outcomes:**  
+Students will learn to decompose time series data into its constituent parts and analyze the seasonal component.
+
+---
+
+### **Class 3: Deseasonalizing Time Series Data**  
+**Learning Objectives:**  
+- Remove seasonality from time series data to analyze trends and residuals.  
+- Use deseasonalized data for modeling and forecasting.  
+
+**Content:**  
+1. **Why Deseasonalize Data?**  
+   - Isolate trends and residuals for clearer analysis.  
+   - Enhance accuracy of models and forecasts by removing seasonal noise.  
+2. **Methods for Deseasonalizing**  
+   - Subtraction for additive models: $$Deseasonalized = Observed - Seasonal Component$$  
+   - Division for multiplicative models: $$Deseasonalized = Observed / Seasonal Component$$  
+3. **Hands-On with R:**  
+   - Use decomposition outputs to deseasonalize time series data.  
+   - Visualize deseasonalized time series and compare with original data.  
+
+**Activities:**  
+- Students deseasonalize datasets using additive and multiplicative models and observe how seasonality removal impacts forecasting accuracy.  
+
+**Outcomes:**  
+Students will learn practical methods to remove seasonality and improve time series analysis.
+
+---
+
+### **Class 4: Practical Applications of Deseasonalized Data**  
+**Learning Objectives:**  
+- Integrate deseasonalized data into modeling and forecasting workflows.  
+- Understand the importance of deseasonalization for data-driven decisions.  
+
+**Content:**  
+1. **Real-World Applications of Deseasonalized Data**  
+   - Examples:  
+     - Forecasting business sales.  
+     - Analyzing climate trends without seasonal fluctuations.  
+   - Comparing results from seasonal and deseasonalized datasets.  
+2. **Hands-On with R:**  
+   - Use deseasonalized data to fit ARIMA and Holt-Winters models.  
+   - Compare forecast accuracy before and after deseasonalization.  
+
+**Activities:**  
+- Students analyze how deseasonalizing impacts model performance and refine forecasts based on deseasonalized data.  
+
+**Outcomes:**  
+Students will understand the importance of deseasonalization in predictive modeling and decision-making.
+
+---
+
+### **Summary for Week 3**  
+By the end of Week 3, students will:  
+- Identify seasonal patterns in time series data.  
+- Use decomposition techniques to separate trend, seasonal, and residual components.  
+- Remove seasonality from data to improve modeling and forecasting accuracy.  
+
+Let me know if you'd like more examples or clarification for these classes!
