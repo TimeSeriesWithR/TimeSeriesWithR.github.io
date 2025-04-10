@@ -1,0 +1,80 @@
+### **Tutorial: Forecast Error Metrics**
+
+Forecast error metrics are critical tools for evaluating the accuracy of forecasting models. These metrics allow you to measure how well a model’s predictions align with actual data, helping you refine models and choose the best one for future predictions.
+
+---
+
+#### **Why Forecast Error Metrics Are Important**  
+Forecasting involves making predictions about future data points based on historical data. Since predictions are rarely perfect, it's essential to measure how far off the forecasts are. Forecast error metrics enable you to:
+1. Assess the reliability of your model.
+2. Compare the performance of different forecasting techniques.
+3. Identify areas for improvement.
+
+---
+
+### **Common Forecast Error Metrics**
+
+1. **Mean Absolute Error (MAE)**  
+   - Measures the average magnitude of errors in a set of predictions.  
+   - Formula:  
+     $$\text{MAE} = \frac{1}{n} \sum_{t=1}^n |Y_t - \hat{Y}_t|$$  
+   - Here, $Y_t$ is the actual value, $\hat{Y}_t$ is the predicted value, and $n$ is the total number of data points.  
+   - **Interpretation**: A lower MAE indicates better forecast accuracy, as it reflects smaller average errors.
+
+2. **Mean Absolute Percentage Error (MAPE)**  
+   - Expresses forecast error as a percentage, allowing comparison across datasets with different scales.  
+   - Formula:  
+     $$\text{MAPE} = \frac{1}{n} \sum_{t=1}^n \left| \frac{Y_t - \hat{Y}_t}{Y_t} \right| \times 100$$  
+   - **Interpretation**: A smaller MAPE indicates more accurate predictions. Note that MAPE is sensitive to data values close to zero.
+
+3. **Root Mean Square Error (RMSE)**  
+   - Gives higher weight to larger errors by squaring the differences.  
+   - Formula:  
+     $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^n (Y_t - \hat{Y}_t)^2}$$  
+   - **Interpretation**: Useful for penalizing large errors, as they have a higher impact on the metric.
+
+4. **Mean Forecast Error (MFE)**  
+   - Measures the bias in predictions by computing the average difference between actual and predicted values.  
+   - Formula:  
+     $$\text{MFE} = \frac{1}{n} \sum_{t=1}^n (Y_t - \hat{Y}_t)$$  
+   - **Interpretation**: A value near zero indicates unbiased forecasts. Negative MFE suggests underestimation, while positive MFE indicates overestimation.
+
+---
+
+### **How to Use Forecast Error Metrics in R**
+
+R provides several functions to calculate forecast error metrics. Below is an example:
+
+```r
+library(forecast)
+
+# Example dataset
+data(AirPassengers)
+model <- auto.arima(AirPassengers)
+
+# Forecasting
+forecasted <- forecast(model, h = 12)
+
+# Accuracy metrics
+accuracy(forecasted)
+```
+
+The `accuracy()` function calculates MAE, RMSE, and MAPE, among others. Use these outputs to compare the performance of multiple models.
+
+---
+
+### **Choosing the Right Metric**  
+- Use **MAE** for straightforward interpretation of average errors.  
+- Use **MAPE** if you want errors expressed as a percentage of actual values.  
+- Use **RMSE** if you want to penalize large errors more heavily.  
+- Use **MFE** to check for bias in your forecasts.
+
+---
+
+### **Practical Insights**  
+- No single metric is universally superior. A combination of metrics often provides the most comprehensive evaluation.  
+- Evaluate metrics relative to the application: For example, low MAPE might matter most in business settings where accuracy directly impacts financial decisions.  
+
+---
+
+Forecast error metrics are an indispensable part of time series analysis. Incorporating these metrics into your workflow helps ensure your forecasts are as reliable and actionable as possible. Happy forecasting!
