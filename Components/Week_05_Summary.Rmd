@@ -1,0 +1,110 @@
+### **Lesson Plan: Week 5 - Autoregressive (AR) Models**  
+**Course Focus:** Develop a deep understanding of autoregressive (AR) models, their mathematical structure, applications, and validation through diagnostic techniques.
+
+---
+
+### **Class 1: Introduction to Autoregressive Models**  
+**Learning Objectives:**  
+- Understand the structure and purpose of AR models.  
+- Identify conditions for stationarity in AR processes.  
+
+**Content:**  
+1. **Defining AR Models**  
+   - AR models express current values as a function of past values and white noise.  
+   - AR(1): $$Y_t = \phi Y_{t-1} + e_t$$  
+   - AR(2): $$Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + e_t$$  
+   - General AR(p).  
+2. **Stationarity Conditions**  
+   - Stationarity is achieved when $|\phi| < 1$.  
+   - Discussion of implications when stationarity is violated.  
+3. **Hands-On with R:**  
+   - Simulate AR(1) and AR(2) processes using `arima.sim()`.  
+   - Visualize generated data to identify stationary and non-stationary behavior.  
+
+**Activities:**  
+- Students experiment with different $\phi$ values in simulations and evaluate the impact on stationarity.  
+
+**Outcomes:**  
+Students will gain foundational knowledge of AR models and their basic properties.
+
+---
+
+### **Class 2: Estimation of Parameters in AR Models**  
+**Learning Objectives:**  
+- Learn techniques for parameter estimation in AR models.  
+- Understand the role of the Yule-Walker equations.  
+
+**Content:**  
+1. **Parameter Estimation Techniques**  
+   - Yule-Walker equations for AR processes:  
+     $$\rho_k = \phi_1 \rho_{k-1} + \phi_2 \rho_{k-2} + \dots + \phi_p \rho_{k-p}$$  
+   - Relating sample autocorrelation ($r_k$) to theoretical autocorrelation ($\rho_k$).  
+2. **Hands-On with R:**  
+   - Estimate AR parameters using `ar()` and `arima()` functions.  
+   - Compare estimated coefficients with theoretical values.  
+
+**Activities:**  
+- Students fit AR(1) and AR(2) models to sample data and compute parameter estimates.  
+
+**Outcomes:**  
+Students will gain practical skills in estimating AR parameters and understanding their significance.
+
+---
+
+### **Class 3: Applications of AR Models**  
+**Learning Objectives:**  
+- Apply AR models to real-world datasets for analysis.  
+- Use AR models for forecasting future values.  
+
+**Content:**  
+1. **Applications in Real-World Scenarios**  
+   - Examples: Financial time series (stock prices), environmental data (temperature, rainfall).  
+   - Discussing the predictive power of AR models.  
+2. **Forecasting with AR Models**  
+   - Generate forecasts based on fitted models.  
+   - Discuss limitations and assumptions in predictions.  
+3. **Hands-On with R:**  
+   - Fit AR models to real datasets (e.g., `nottem`, custom datasets).  
+   - Use `forecast()` to generate and visualize predictions.  
+
+**Activities:**  
+- Students apply AR models to a real-world dataset, forecast future values, and interpret results.  
+
+**Outcomes:**  
+Students will understand the utility of AR models for analyzing and forecasting time series data.
+
+---
+
+### **Class 4: Diagnostics and Model Validation**  
+**Learning Objectives:**  
+- Perform diagnostics on AR models to ensure adequacy.  
+- Use residual analysis for validation.  
+
+**Content:**  
+1. **Diagnostics for AR Models**  
+   - Residual analysis: Checking for white noise behavior.  
+   - Use of ACF and PACF on residuals for validation.  
+2. **Model Validation and Refinement**  
+   - Common pitfalls: Overfitting and underfitting.  
+   - Iterative adjustment of parameters for improved model fit.  
+3. **Hands-On with R:**  
+   - Perform residual diagnostics with `checkresiduals()` from the `forecast` package.  
+   - Test residual independence using the Ljung-Box test (`Box.test()`).  
+   - Refine AR models based on diagnostic outputs.  
+
+**Activities:**  
+- Students validate their previously fitted AR models, identify residual issues, and refine their models.  
+
+**Outcomes:**  
+Students will master diagnostic techniques and ensure the reliability of AR models for analysis.
+
+---
+
+### **Summary for Week 5**  
+At the end of Week 5, students will:  
+- Understand the structure and function of AR models.  
+- Estimate parameters using theoretical and sample techniques.  
+- Apply AR models to real-world datasets and generate forecasts.  
+- Validate and refine AR models using diagnostic tools in R.  
+
+Let me know if you'd like additional examples or adjustments!
