@@ -1,0 +1,102 @@
+### **Lesson Plan: Week 9 - Evaluation of Forecasts**  
+**Course Focus:** Explore methods to evaluate the accuracy and effectiveness of forecasting models, comparing performance metrics across different approaches, and refining models based on evaluation.
+
+---
+
+### **Class 1: Forecast Accuracy Metrics**  
+**Learning Objectives:**  
+- Understand the importance of evaluating forecasting accuracy.  
+- Learn different metrics to measure forecast performance.  
+
+**Content:**  
+1. **What Is Forecast Accuracy?**  
+   - Importance of measuring how well a model predicts future values.  
+   - Challenges in assessing predictive accuracy over different time horizons.  
+2. **Key Accuracy Metrics**  
+   - Mean Absolute Error (MAE).  
+   - Mean Absolute Percentage Error (MAPE).  
+   - Root Mean Square Error (RMSE).  
+   - Mean Forecast Error (bias).  
+3. **Hands-On with R:**  
+   - Compute forecast accuracy metrics using the `accuracy()` function from the `forecast` package.  
+   - Evaluate simple models (e.g., ARIMA, Holt-Winters) using provided datasets.  
+
+**Activities:**  
+- Students calculate MAE, MAPE, and RMSE for forecasts generated from example models.  
+
+**Outcomes:**  
+Students will understand different forecast metrics and their implications for model evaluation.
+
+---
+
+### **Class 2: Visualizing Forecast Performance**  
+**Learning Objectives:**  
+- Use visual tools to assess forecast accuracy and residual behavior.  
+- Interpret residual plots for forecasting diagnostics.  
+
+**Content:**  
+1. **Evaluating Forecasts Visually**  
+   - Plot actual vs. predicted values.  
+   - Residual diagnostics: Randomness and independence assumptions.  
+   - Prediction intervals and their role in assessing forecast reliability.  
+2. **Hands-On with R:**  
+   - Visualize residuals using `checkresiduals()` and `autoplot()` functions.  
+   - Generate actual vs. forecast plots and overlay confidence intervals.  
+
+**Activities:**  
+- Students generate residual plots and interpret patterns for model adequacy.  
+
+**Outcomes:**  
+Students will learn to use visualization techniques to validate forecast performance.
+
+---
+
+### **Class 3: Comparing Forecasting Models**  
+**Learning Objectives:**  
+- Compare different forecasting methods to determine the best-performing model.  
+- Use multiple metrics and techniques to make informed comparisons.  
+
+**Content:**  
+1. **Model Comparison**  
+   - Comparing models using accuracy metrics (e.g., AIC, BIC, RMSE).  
+   - Assessing complexity and overfitting risks in forecasting models.  
+2. **Hands-On with R:**  
+   - Compare performance of ARIMA vs. Holt-Winters models.  
+   - Use `accuracy()` to rank models based on error metrics.  
+
+**Activities:**  
+- Students apply both Holt-Winters and ARIMA models to a shared dataset and compare their performance.  
+
+**Outcomes:**  
+Students will gain experience comparing and ranking forecasting models using both statistical and visual tools.
+
+---
+
+### **Class 4: Refining Forecast Models**  
+**Learning Objectives:**  
+- Learn how to improve forecasts by iterating on model specifications.  
+- Address issues identified in model diagnostics.  
+
+**Content:**  
+1. **Refining Models**  
+   - Iteratively tuning model parameters (e.g., ARIMA orders, Holt-Winters smoothing weights).  
+   - Revisiting assumptions and data transformations (e.g., differencing, logarithmic transformations).  
+2. **Hands-On with R:**  
+   - Refine models based on earlier evaluations.  
+   - Experiment with parameter adjustments using `auto.arima()` and `HoltWinters()`.  
+   - Evaluate improvements with updated metrics and plots.  
+
+**Activities:**  
+- Students refine their forecasting models based on diagnostic feedback and re-evaluate their performance.  
+
+**Outcomes:**  
+Students will learn to iteratively refine and improve models for more accurate and reliable forecasts.
+
+---
+
+### **Summary for Week 9**  
+By the end of Week 9, students will:  
+- Evaluate forecast accuracy using statistical metrics and residual diagnostics.  
+- Compare forecasting models to identify the most suitable approach for given datasets.  
+- Refine and improve forecasts based on iterative diagnostics and evaluation.  
+
