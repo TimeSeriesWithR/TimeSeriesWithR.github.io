@@ -1,0 +1,177 @@
+### **Lesson Plan: 12-Week Course on "Time Series Analysis with R"**
+
+---
+
+#### **Course Overview**
+**Rationale and Purpose:**  
+This course explores the statistical underpinnings of time series analysis, emphasizing model identification, fitting, criticism, and forecasting in time and frequency domains using R.  
+
+**Learning Outcomes (LO):**  
+By the end of the course, students will:
+1. Calculate theoretical autocorrelation, partial autocorrelation, spectrum, and spectral density for time series models.  
+2. Use diagnostic tools and plots in R to identify appropriate models for seasonal ARIMA processes.  
+3. Apply model-fitting and parameter estimation methods, leveraging maximum likelihood estimation, Yule-Walker equations, AIC, and BIC criteria.  
+4. Compute forecasts and prediction errors for seasonal ARIMA models.  
+5. Analyze cross-correlation and cross-spectrum in bivariate processes.  
+6. Interpret statistical outputs from R for applied time series analysis.
+
+---
+
+### **Week-by-Week Lesson Plan**
+
+#### **Week 1: Introduction to Time Series**
+- **Topics:**  
+  - Components of a time series: Trend, seasonal, and random variations.  
+  - Time series data structures in R.  
+  - Visualizing time series data.  
+- **Hands-On with R:**  
+  - Loading time series data (`ts` objects) and visualization (`plot.ts`, `ggplot2`).  
+  - Analyze and interpret historical datasets (e.g., monthly oil prices).  
+- **Learning Outcomes:**  
+  - Understand the structure of time series data and its components.  
+  - Learn to handle time series in R.
+
+---
+
+#### **Week 2: Smoothing Methods and Trend Projection**
+- **Topics:**  
+  - Smoothing techniques: Moving averages, exponential smoothing.  
+  - Identifying and modeling trends.  
+- **Hands-On with R:**  
+  - Apply smoothing methods using packages (`TTR`, `forecast`).  
+  - Explore trend projection using regression on time.  
+- **Learning Outcomes:**  
+  - Use smoothing to identify trends and noise reduction.
+
+---
+
+#### **Week 3: Seasonality and Deseasonalizing Time Series**
+- **Topics:**  
+  - Seasonal decomposition (additive and multiplicative).  
+  - Deseasonalizing to isolate trends and residuals.  
+- **Hands-On with R:**  
+  - Decompose time series using `decompose` and `stl`.  
+  - Apply transformations for trend and seasonality adjustments.  
+- **Learning Outcomes:**  
+  - Analyze and remove seasonality effects using R functions.
+
+---
+
+#### **Week 4: Autocorrelation and Partial Autocorrelation**
+- **Topics:**  
+  - Autocorrelation and partial autocorrelation functions (ACF, PACF).  
+  - Understanding lag dependence.  
+- **Hands-On with R:**  
+  - Visualize ACF and PACF using `acf` and `pacf`.  
+  - Interpretation of correlograms for model selection.  
+- **Learning Outcomes:**  
+  - Calculate and interpret ACF/PACF for data exploration.
+
+---
+
+#### **Week 5: Autoregressive (AR) Models**
+- **Topics:**  
+  - AR models: AR(1), AR(2), and higher orders.  
+  - Stationarity conditions ($|\phi| < 1$).  
+- **Hands-On with R:**  
+  - Fit AR models using `arima`.  
+  - Evaluate and visualize residuals.  
+- **Learning Outcomes:**  
+  - Fit and validate AR models using R.
+
+---
+
+#### **Week 6: Integrated Models**
+- **Topics:**  
+  - Differencing to achieve stationarity.  
+  - Integrated models and random walk processes.  
+- **Hands-On with R:**  
+  - Apply differencing with `diff`.  
+  - Evaluate stationarity using `adf.test`.  
+- **Learning Outcomes:**  
+  - Transform non-stationary data to stationary series.
+
+---
+
+#### **Week 7: ARIMA and Box-Jenkins Approach**
+- **Topics:**  
+  - ARIMA models (Auto-Regressive Integrated Moving Average).  
+  - Box-Jenkins methodology: Identification, estimation, diagnostics.  
+- **Hands-On with R:**  
+  - Fit ARIMA models using `auto.arima`.  
+  - Use model diagnostics (`checkresiduals`, `Ljung-Box`).  
+- **Learning Outcomes:**  
+  - Apply the Box-Jenkins approach to select ARIMA models.
+
+---
+
+#### **Week 8: Advanced Forecasting Techniques**
+- **Topics:**  
+  - Forecasting methods: Holt-Winters, ARIMA-based forecasting.  
+  - Measuring forecasting accuracy (MAPE, RMSE).  
+- **Hands-On with R:**  
+  - Perform forecasts with `forecast`.  
+  - Compare model performance metrics.  
+- **Learning Outcomes:**  
+  - Generate accurate forecasts using R.
+
+---
+
+#### **Week 9: Spectral Analysis**
+- **Topics:**  
+  - Introduction to the frequency domain.  
+  - Spectral density function, Fourier analysis, periodograms.  
+- **Hands-On with R:**  
+  - Compute spectral density using `spectrum`.  
+  - Analyze periodograms for frequency components.  
+- **Learning Outcomes:**  
+  - Understand and apply spectral analysis techniques.
+
+---
+
+#### **Week 10: Cross-Correlation and Cross-Spectrum**
+- **Topics:**  
+  - Bivariate processes and cross-correlation function (CCF).  
+  - Cross-spectrum in frequency domain analysis.  
+- **Hands-On with R:**  
+  - Calculate cross-correlation using `ccf`.  
+  - Interpret bivariate relationships in time series.  
+- **Learning Outcomes:**  
+  - Explore relationships between two time series datasets.
+
+---
+
+#### **Week 11: Applied Time Series Analysis**
+- **Topics:**  
+  - Comprehensive analysis of a real-world time series dataset.  
+  - End-to-end modeling: From data preprocessing to forecasting.  
+- **Hands-On with R:**  
+  - Work with datasets (e.g., financial, environmental).  
+  - Summarize findings with plots and reports.  
+- **Learning Outcomes:**  
+  - Synthesize and apply concepts to solve practical problems.
+
+---
+
+#### **Week 12: Review and Final Project**
+- **Topics:**  
+  - Review key concepts: ACF, PACF, ARIMA, Box-Jenkins, spectral methods.  
+  - Presentation of final projects.  
+- **Final Project:**  
+  - Students analyze a dataset of their choice, identifying patterns, fitting a model, and providing forecasts.  
+- **Learning Outcomes:**  
+  - Demonstrate mastery of time series analysis in a comprehensive application.
+
+---
+
+### **References and Resources**  
+**Primary Texts:**  
+- Shumway, R.H., & Stoffer, D.S. (2006). *Time Series Analysis and its Applications with R Examples* (2nd Ed.). Springer.  
+- Chatfield, C. (2004). *The Analysis of Time Series* (6th Ed.). Chapman and Hall.  
+
+**Supplementary Texts:**  
+- Tsay, R.S. (2005). *Analysis of Financial Time Series* (2nd Ed.). Wiley.  
+
+---
+
+This 12-week plan ensures a structured and hands-on learning experience. Do you feel this addresses your teaching needs, or shall I refine it further?
