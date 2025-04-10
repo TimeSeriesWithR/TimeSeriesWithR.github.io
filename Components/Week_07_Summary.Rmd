@@ -1,0 +1,126 @@
+### **Lesson Plan: Week 7 - ARIMA Models and the Box-Jenkins Methodology**  
+**Course Focus:** Understanding and applying ARIMA models (Auto-Regressive Integrated Moving Average) using the systematic Box-Jenkins approach, covering model identification, estimation, and diagnostics.
+
+---
+
+### **Class 1: Introduction to ARIMA Models**  
+**Learning Objectives:**  
+- Understand the components of an ARIMA model: AR (Auto-Regressive), I (Integrated), and MA (Moving Average).  
+- Explore the flexibility of ARIMA models for various time series data types.  
+
+**Content:**  
+1. **Overview of ARIMA Models**  
+   - Definition and components: AR(p), I(d), and MA(q).  
+   - Stationarity in ARIMA models and the role of differencing (I).  
+   - Examples of ARIMA processes:  
+     - ARIMA(1, 0, 0): Purely AR.  
+     - ARIMA(0, 1, 1): Random walk with MA component.  
+   - Understanding orders (p, d, q) and their influence on the model.  
+2. **When to Use ARIMA**  
+   - When data exhibits trends or lacks stationarity.  
+   - Advantages over simpler models for time-dependent data.  
+3. **Hands-On with R:**  
+   - Explore time series datasets in R (`AirPassengers`, `nottem`).  
+   - Fit basic ARIMA models using the `forecast` package and `arima()` function.  
+
+**Activities:**  
+- Identify the characteristics of given time series and suggest possible ARIMA models.  
+- Fit ARIMA(0,1,1) models to datasets and interpret outputs.  
+
+**Outcomes:**  
+Students will be able to describe ARIMA model components and fit simple models to real data.
+
+---
+
+### **Class 2: Model Identification Using the Box-Jenkins Approach**  
+**Learning Objectives:**  
+- Learn the Box-Jenkins methodology for identifying suitable ARIMA models.  
+- Use ACF and PACF plots to determine the values of p, d, and q.  
+
+**Content:**  
+1. **Box-Jenkins Methodology**  
+   - The three steps:  
+     - Identification: Determine p, d, and q using data plots, ACF, and PACF.  
+     - Estimation: Fit the model and estimate parameters.  
+     - Diagnostics: Check residuals to ensure adequacy.  
+2. **Using ACF and PACF for Identification**  
+   - Patterns in ACF and PACF for AR, MA, and ARIMA models.  
+     - AR models: PACF truncates; ACF tails off.  
+     - MA models: ACF truncates; PACF tails off.  
+     - ARIMA models: Non-stationary patterns pre-differencing.  
+3. **Hands-On with R:**  
+   - Visualizing ACF/PACF using `acf()` and `pacf()`.  
+   - Differencing a non-stationary time series and reevaluating ACF/PACF.  
+   - Example: `AirPassengers` dataset.  
+
+**Activities:**  
+- Students identify ACF/PACF patterns in provided datasets.  
+- Propose possible ARIMA models based on these visual patterns.  
+
+**Outcomes:**  
+Students will gain the ability to interpret ACF and PACF plots and identify ARIMA orders.
+
+---
+
+### **Class 3: Model Estimation and Parameter Fitting**  
+**Learning Objectives:**  
+- Explore techniques for estimating ARIMA parameters.  
+- Understand statistical measures like Maximum Likelihood Estimation (MLE).  
+
+**Content:**  
+1. **Estimation Methods for ARIMA Models**  
+   - Maximum Likelihood Estimation (MLE): Basics and relevance in ARIMA.  
+   - Yule-Walker equations for AR models.  
+2. **Model Fitting in R**  
+   - Fitting ARIMA models using `arima()` and `auto.arima()` in the `forecast` package.  
+   - Comparing models with Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC).  
+   - Example: Comparing ARIMA(1,1,0) vs. ARIMA(0,1,1).  
+3. **Hands-On with R:**  
+   - Fit ARIMA models with different orders and evaluate their goodness-of-fit.  
+   - Compute AIC/BIC for model comparison.  
+
+**Activities:**  
+- Students fit ARIMA models to a provided dataset and identify the best-fitting model using AIC/BIC.  
+- Interpret the coefficients from fitted models.  
+
+**Outcomes:**  
+Students will learn how to fit ARIMA models and evaluate their statistical adequacy.
+
+---
+
+### **Class 4: Model Diagnostics and Refinement**  
+**Learning Objectives:**  
+- Evaluate residuals to ensure the adequacy of fitted ARIMA models.  
+- Perform model refinement based on diagnostic results.  
+
+**Content:**  
+1. **Diagnostics for ARIMA Models**  
+   - Residual analysis: Check for randomness (white noise).  
+   - Statistical tests for residuals:  
+     - Ljung-Box test for independence.  
+     - Shapiro-Wilk test for normality.  
+   - Revisiting ACF/PACF for residuals.  
+2. **Refinement of ARIMA Models**  
+   - Iterative process: Adjust p, d, q as necessary.  
+   - Avoiding overfitting while achieving better fit.  
+3. **Hands-On with R:**  
+   - Conduct residual diagnostics using `checkresiduals()` from the `forecast` package.  
+   - Use the Ljung-Box test (`Box.test()`) to assess residual independence.  
+   - Refine ARIMA models and compare improvements.  
+
+**Activities:**  
+- Students analyze residuals for their fitted ARIMA models.  
+- Refine models to address issues identified during diagnostics.  
+
+**Outcomes:**  
+Students will master model diagnostics and be able to refine ARIMA models for better performance.
+
+---
+
+### **Summary for Week 7**  
+At the end of Week 7, students will:
+- Understand the principles of ARIMA models and the Box-Jenkins methodology.  
+- Identify, fit, and diagnose ARIMA models using R tools.  
+- Evaluate and refine their models for practical applications in time series analysis.  
+
+Would you like to expand on any of these lessons further?
