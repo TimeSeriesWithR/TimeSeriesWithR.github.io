@@ -1,0 +1,105 @@
+### **Lesson Plan: Week 4 - Autocorrelation and Partial Autocorrelation**  
+**Course Focus:** Dive into autocorrelation and partial autocorrelation functions (ACF and PACF) to analyze the dependency structures in time series data.
+
+---
+
+### **Class 1: Understanding Autocorrelation**  
+**Learning Objectives:**  
+- Define autocorrelation and its role in time series analysis.  
+- Understand how lagged values impact current observations.  
+
+**Content:**  
+1. **What Is Autocorrelation?**  
+   - Relationship between a time series and its lagged versions.  
+   - Mathematical definition:  
+     $$\rho_k = \frac{\text{Cov}(Y_t, Y_{t-k})}{\text{Var}(Y_t)}$$  
+   - Applications in identifying patterns and dependencies.  
+2. **Significance of Lag**  
+   - Lag structure and its implications for model selection.  
+   - Visualizing autocorrelation to detect trends or cycles.  
+3. **Hands-On with R:**  
+   - Compute autocorrelation using the `acf()` function.  
+   - Visualize autocorrelation for datasets like `AirPassengers` and `nottem`.  
+
+**Activities:**  
+- Students compute and plot autocorrelation for given datasets, observing the relationship at different lags.  
+
+**Outcomes:**  
+Students will understand autocorrelation and its significance in time series data.
+
+---
+
+### **Class 2: Partial Autocorrelation**  
+**Learning Objectives:**  
+- Learn the concept of partial autocorrelation and its distinction from full autocorrelation.  
+- Understand PACF as a tool to isolate direct relationships between observations.  
+
+**Content:**  
+1. **What Is Partial Autocorrelation?**  
+   - Measure of correlation between $Y_t$ and $Y_{t-k}$, removing effects of intermediate lags.  
+   - Mathematical representation: Conditional correlation.  
+2. **Interpreting PACF**  
+   - PACF truncation for AR models.  
+   - Visual patterns in PACF plots for model identification.  
+3. **Hands-On with R:**  
+   - Compute PACF using the `pacf()` function.  
+   - Compare PACF and ACF plots to isolate direct versus indirect dependencies.  
+
+**Activities:**  
+- Students interpret PACF plots for simulated AR processes and observe truncation patterns.  
+
+**Outcomes:**  
+Students will learn how PACF complements ACF in time series analysis.
+
+---
+
+### **Class 3: Using ACF and PACF to Identify Models**  
+**Learning Objectives:**  
+- Apply ACF and PACF plots to identify AR and MA components in time series models.  
+- Learn the role of these functions in model selection.  
+
+**Content:**  
+1. **ACF and PACF Patterns for Model Selection**  
+   - AR Models: PACF truncates, ACF tails off.  
+   - MA Models: ACF truncates, PACF tails off.  
+   - ARIMA Models: Pre-differencing yields non-stationary patterns.  
+2. **Hands-On with R:**  
+   - Generate ACF and PACF plots for simulated ARIMA models.  
+   - Discuss model orders (p, d, q) based on plot interpretation.  
+
+**Activities:**  
+- Students use ACF and PACF plots to propose ARIMA models for datasets.  
+
+**Outcomes:**  
+Students will gain skills to identify appropriate models using ACF and PACF.
+
+---
+
+### **Class 4: Practical Applications of ACF and PACF**  
+**Learning Objectives:**  
+- Use ACF and PACF in real-world time series analysis.  
+- Discuss challenges and limitations in interpreting these plots.  
+
+**Content:**  
+1. **ACF and PACF in Practice**  
+   - Examples: Analyzing stock market trends, environmental cycles, and sales patterns.  
+   - Limitations: Noise, high seasonality, overfitting risks.  
+2. **Hands-On with R:**  
+   - Apply ACF and PACF tools to real-world datasets.  
+   - Combine results with exploratory visualizations to propose models.  
+
+**Activities:**  
+- Students analyze ACF and PACF plots for their datasets and present model recommendations based on findings.  
+
+**Outcomes:**  
+Students will integrate ACF and PACF into practical time series workflows.
+
+---
+
+### **Summary for Week 4**  
+At the end of Week 4, students will:  
+- Understand autocorrelation and partial autocorrelation in depth.  
+- Use ACF and PACF plots to analyze dependency structures in time series.  
+- Apply these tools for model selection and validation in R.  
+
+Let me know if you'd like further examples or refinement for any of these classes!
