@@ -107,4 +107,3 @@ At the end of Week 5, students will:
 - Apply AR models to real-world datasets and generate forecasts.  
 - Validate and refine AR models using diagnostic tools in R.  
 
-Let me know if you'd like additional examples or adjustments!
