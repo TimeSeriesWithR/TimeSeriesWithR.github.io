@@ -1,0 +1,103 @@
+### **Lesson Plan: Week 10 - Spectral Analysis in Time Series**  
+**Course Focus:** Introduce frequency domain concepts in time series analysis, focusing on spectral density, periodogram analysis, and Fourier techniques to explore cyclical and periodic behavior.
+
+---
+
+### **Class 1: Introduction to Spectral Analysis**  
+**Learning Objectives:**  
+- Understand the principles of spectral analysis in the frequency domain.  
+- Learn the role of spectral density and its applications in time series.  
+
+**Content:**  
+1. **What Is Spectral Analysis?**  
+   - Time domain vs. frequency domain analysis.  
+   - Identifying cyclic and periodic patterns in time series.  
+   - Importance of spectral density function (distribution of variance across frequencies).  
+2. **Applications of Spectral Analysis**  
+   - Examples in economic cycles, seasonal trends, and signal processing.  
+3. **Hands-On with R:**  
+   - Generate synthetic periodic data using `arima.sim()`.  
+   - Plot time series and discuss its periodic behavior.  
+
+**Activities:**  
+- Students compare the time domain and frequency domain representations for sample datasets.  
+
+**Outcomes:**  
+Students will understand the concept of spectral analysis and its significance in identifying cyclical patterns.
+
+---
+
+### **Class 2: Fourier Analysis and Periodograms**  
+**Learning Objectives:**  
+- Learn the fundamentals of Fourier analysis and its role in decomposing signals.  
+- Understand periodograms and their use in visualizing frequency components.  
+
+**Content:**  
+1. **Fourier Analysis Basics**  
+   - Concept of sine and cosine functions as building blocks of signals.  
+   - Decomposing a time series into frequency components.  
+2. **Periodogram Analysis**  
+   - Definition: Graphical representation of power spectrum vs. frequency.  
+   - Identifying dominant frequencies in time series.  
+3. **Hands-On with R:**  
+   - Compute and plot periodograms using `spectrum()` function in R.  
+   - Analyze a dataset to detect dominant cycles and periodicity.  
+
+**Activities:**  
+- Students create and interpret periodograms for given time series.  
+
+**Outcomes:**  
+Students will understand Fourier analysis and be able to use periodograms to explore frequency domain characteristics.
+
+---
+
+### **Class 3: Spectral Density and Frequency Analysis**  
+**Learning Objectives:**  
+- Dive deeper into spectral density and its role in interpreting frequency domain data.  
+- Explore the relationship between spectral density and variance in time series.  
+
+**Content:**  
+1. **Spectral Density Function**  
+   - Definition and its importance in summarizing periodic behavior.  
+   - Relationship to variance in the time series (power at specific frequencies).  
+2. **Frequency Domain Insights**  
+   - Recognizing seasonal and cyclical variations in datasets using spectral density.  
+3. **Hands-On with R:**  
+   - Compute spectral density plots for datasets using `spectrum()`.  
+   - Analyze examples of time series with distinct frequency behaviors (e.g., temperature, stock prices).  
+
+**Activities:**  
+- Students compare spectral density functions across different datasets and discuss findings.  
+
+**Outcomes:**  
+Students will gain deeper insights into spectral density and its application in time series analysis.
+
+---
+
+### **Class 4: Practical Applications of Spectral Methods**  
+**Learning Objectives:**  
+- Apply spectral techniques to real-world datasets for periodic behavior analysis.  
+- Synthesize insights from frequency domain analysis.  
+
+**Content:**  
+1. **Practical Use Cases for Spectral Analysis**  
+   - Examples: Financial market cycles, weather trends, signal processing.  
+   - Integrating spectral analysis into overall time series modeling.  
+2. **Hands-On with R:**  
+   - Select a real-world dataset and analyze periodic patterns using spectral techniques.  
+   - Summarize findings in the context of practical applications.  
+
+**Activities:**  
+- Students independently explore the spectral properties of chosen datasets and present their conclusions.  
+
+**Outcomes:**  
+Students will integrate spectral methods into time series analysis for meaningful applications.
+
+---
+
+### **Summary for Week 10**  
+By the end of Week 10, students will:  
+- Understand the principles and applications of spectral analysis.  
+- Perform Fourier decomposition and periodogram analysis using R.  
+- Compute and interpret spectral density functions for periodic behavior in datasets.  
+- Apply spectral methods to analyze real-world time series data.
