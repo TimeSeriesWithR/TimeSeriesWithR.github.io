@@ -1,50 +1,38 @@
-
 ## Automated Model Selection
 
-The `ets()` function allows us to automatically select a model given the time
-series data.
+The `ets()` function facilitates automatic model selection based on time series data. Exponentially smoothed models are fitted, and decision metrics like AIC and BIC are employed to select the best model.
 
-The exponentially-smoothed models fitted allows us to use AIC and BIC as a
-decision metric.
+### Key Metrics:
+1. **Akaike Information Criterion (AIC):**
+   \[
+   \text{AIC} = -2 \log(L) + 2k
+   \]
+   Where:
+   - \( L \): Likelihood of the fitted model.
+   - \( k \): Number of degrees of freedom (free parameters, initial states, and residual variance).
 
-The Aikake Information Criterion (AIC) is defined to be:
+   For small sample sizes, a corrected version (\( \text{AIC}_c \)) mitigates overfitting:
+   \[
+   \text{AIC}_c = \text{AIC} + \frac{k(k+1)}{T - k -1}
+   \]
 
-$$
-\text{AIC} = -2 \log(L) + 2k,
-$$
+2. **Bayes Information Criterion (BIC):**
+   \[
+   \text{BIC} = \text{AIC} + k (\log(T) - 2)
+   \]
 
-where $L$ is the likelihood of the fitted model and $k$ is the number of
-degrees of freedom in the model (free parameters, initial states and residual
-variance).
+The `ets()` function allows customization of the error term, trend type, and seasonality using the following options:
+- Additive (A), Multiplicative (M), None (N), or Automatic (Z).
 
-For small sample sizes this approach may still be prone to overfitting, so we
-may use a corrected version for small-sample bias, ($\text{AIC}_c$)
+**Note:** Error terms cannot be 'N', and some combinations are numerically unstable and omitted.
 
-$$
-\text{AIC}_c = \text{AIC} + \frac{k(k+1)}{T - k -1},
-$$
-
-The Bayes Information Criterion (BIC) is defined to be:
-
-$$
-\text{BIC} = \text{AIC} + k (\log(T) - 2)
-$$
-
-The `ets()` model allows us to select the type of error term, trend type and
-seasonality, letting us choose additive (A), multiplicative (M), none (N) or
-automatically selected (Z) for each of the three options.
-
-The first values, the error term, cannot be 'N' and a number of combinations
-are numerically unstable and suppressed.
-
-We now fit both the Air Passenger and Maine Unemployment data using the
-automatic model selection.
+---
 
 ### Air Passenger Models
 
-We now fit the Air Passenger data first.
+We fit the Air Passenger data using automatic model selection.
 
-```{r fit_ap_auto_ets, echo=TRUE}
+```r
 ap_autoets_fit <- ap_train_tbl %>%
   tk_ts(select = value, start = 1949, frequency = 12) %>%
   ets(model = 'ZZZ')
@@ -52,55 +40,36 @@ ap_autoets_fit <- ap_train_tbl %>%
 ap_autoets_forecast <- ap_autoets_fit %>%
   forecast(h = 12, level = c(50, 80))
 
-ap_autoets_forecast_tbl <- ap_autoets_forecast %>%
-  sw_sweep(rename_index = 'month')
-
-ap_autoets_fit %>% sw_tidy()
-ap_autoets_fit %>% sw_glance()
-
 ggplot(ap_autoets_forecast_tbl) +
   geom_line(aes(x = month, y = value, colour = key)) +
   geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
-  geom_line  (aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
-  expand_limits(y = 0) +
-  xlab("Date") +
-  ylab("Count") +
-  scale_x_yearmon() +
+  geom_line(aes(x = month, y = value), colour = 'red', data = ap_test_tbl) +
   ggtitle('Air Passengers Forecast for Automatic ETS Model')
 ```
 
-Having fit the data and selected the model, we now can compare our different
-models and how the forecasts compare to each other.
+We compare the forecasts across different models.
 
-```{r compare_ap_forecasts, echo=TRUE}
+```r
 ap_forecast_compare_tbl <- list(
-  ewma   = ap_ewma_forecast_tbl    %>% filter(key == 'forecast'),
-  hw     = ap_hw_forecast_tbl      %>% filter(key == 'forecast'),
-  hwmult = ap_hwmult_forecast_tbl  %>% filter(key == 'forecast'),
+  ewma   = ap_ewma_forecast_tbl %>% filter(key == 'forecast'),
+  hw     = ap_hw_forecast_tbl %>% filter(key == 'forecast'),
+  hwmult = ap_hwmult_forecast_tbl %>% filter(key == 'forecast'),
   auto   = ap_autoets_forecast_tbl %>% filter(key == 'forecast')
   ) %>%
-  bind_rows(.id = 'model') %>%
-  mutate(month = as.yearmon(month))
-
+  bind_rows(.id = 'model')
 
 ggplot(ap_forecast_compare_tbl) +
   geom_line(aes(x = month, y = value, colour = model)) +
-  geom_line(aes(x = month, y = value), colour = 'black', data = ap_test_tbl) +
-  expand_limits(y = 0) +
-  scale_x_yearmon() +
-  xlab("Date") +
-  ylab("Count") +
-  scale_x_yearmon() +
   ggtitle('Comparison of Air Passenger Forecast Models')
 ```
 
+---
 
 ### Maine Unemployment Models
 
-We now move on to the Maine Unemployment data, and repeat the procedure.
+We apply the same process to the Maine Unemployment data.
 
-
-```{r fit_maine_auto_ets, echo=TRUE}
+```r
 maine_autoets_fit <- maine_train_tbl %>%
   tk_ts(select = value, start = 1996, frequency = 12) %>%
   ets(model = 'ZZZ')
@@ -108,108 +77,51 @@ maine_autoets_fit <- maine_train_tbl %>%
 maine_autoets_forecast <- maine_autoets_fit %>%
   forecast(h = 20, level = c(50, 80))
 
-maine_autoets_forecast_tbl <- maine_autoets_forecast %>%
-  sw_sweep(rename_index = 'month')
-
-
-maine_autoets_fit %>% sw_tidy()
-maine_autoets_fit %>% sw_glance()
-
-
 ggplot(maine_autoets_forecast_tbl) +
   geom_line(aes(x = month, y = value, colour = key)) +
-  geom_ribbon(aes(x = month, ymin = lo.50, ymax = hi.50), alpha = 0.2) +
-  geom_line  (aes(x = month, y = value), colour = 'red', data = maine_test_tbl) +
-  expand_limits(y = 0) +
-  xlab("Date") +
-  ylab("Count") +
-  scale_x_yearmon() +
   ggtitle('Maine Unemployment Forecast for Automatic ETS Model')
 ```
 
-As before, we compare the forecasts against one another.
+Forecast comparisons are conducted as follows:
 
-```{r compare_maine_forecasts, echo=TRUE}
+```r
 maine_forecast_compare_tbl <- list(
-  ewma      = maine_ewma_forecast_tbl          %>% filter(key == 'forecast'),
-  ewmaparam = maine_ewma_paramfit_forecast_tbl %>% filter(key == 'forecast'),
-  hw        = maine_hw_forecast_tbl            %>% filter(key == 'forecast'),
-  hwmult    = maine_hwmult_forecast_tbl        %>% filter(key == 'forecast'),
-  auto      = maine_autoets_forecast_tbl       %>% filter(key == 'forecast')
+  ewma      = maine_ewma_forecast_tbl %>% filter(key == 'forecast'),
+  hw        = maine_hw_forecast_tbl %>% filter(key == 'forecast'),
+  hwmult    = maine_hwmult_forecast_tbl %>% filter(key == 'forecast'),
+  auto      = maine_autoets_forecast_tbl %>% filter(key == 'forecast')
   ) %>%
-  bind_rows(.id = 'model') %>%
-  mutate(month = as.yearmon(month))
-
+  bind_rows(.id = 'model')
 
 ggplot(maine_forecast_compare_tbl) +
   geom_line(aes(x = month, y = value, colour = model)) +
-  geom_line(aes(x = month, y = value), colour = 'black', data = maine_test_tbl) +
-  expand_limits(y = 0) +
-  xlab("Date") +
-  ylab("Count") +
-  scale_x_yearmon() +
   ggtitle('Comparison of Maine Unemployment Forecast Models')
 ```
 
+---
 
-# Forecast Evaluation
+## Forecast Evaluation
 
-We finally come to the most important part of forecasting - how we decide how
-good it is.
+Finally, we evaluate the models using various error metrics:
 
+1. **Error/Residual:**  
+   \[
+   e_{t+h} = y_{t+h} - \hat{y}_{t+h \, | \,t}
+   \]
 
-## Evaluation Metrics
+2. **Metrics Derived from Errors:**
+   - **Mean Absolute Error (MAE):** \( \text{mean}(|e_t|) \)  
+   - **Root Mean Square Error (RMSE):** \( \sqrt{\text{mean}(e_t^2)} \)  
+   - **Mean Absolute Percentage Error (MAPE):** \( \text{mean}(|p_t|) \)  
+   - **Symmetric MAPE:**  
+     \[
+     \frac{200 * |y_t - \hat{y}_t|}{y_t + \hat{y}_t}
+     \]
+   - **Mean Absolute Scaled Error (MASE):** \( \text{mean}(|q_j|) \)
 
-We start by defining the forecast *error* or forecast *residual*, $e_{t+h}$ as:
+Metrics are calculated and visualized for both Air Passenger and Maine Unemployment models.
 
-$$
-e_{t+h} = y_{t+h} - \hat{y}_{t+h \, | \,t}
-$$
-
-This is scale-dependent, so we also define the *forecast percentage error*,
-$p_t$
-
-$$
-p_t = \frac{e_t}{y_t}
-$$
-
-
-where:
-
-\begin{eqnarray*}
-y_{t+h} &=& \text{realized value at time } t+h   \\
-\hat{y}_{t+h} &=& \text{forecast value at time } t+h
-\end{eqnarray*}
-
-From this we build a number of different metrics:
-
-\begin{eqnarray*}
-\text{Mean absolute error, MAE}              &=&
-    \text{mean}(|e_t|)                                     \\
-\text{Root mean square error, RMSE}          &=&
-    \sqrt{\text{mean}(e_t^2)}                              \\
-\text{Mean absolute percentage error, MAPE}  &=& 
-    \text{mean}(|p_t|)                                     \\
-\text{Symmetric MAPE}                        &=&
-    \frac{200 * |y_t - \hat{y}_t|}{y_t + \hat{y}_t}        \\
-\text{Scaled error}, q_j                     &=&
-    \frac{e_j}{\frac{1}{T-1} \sum_{t=2}^T |y_t - y_{t-1}|} \\
-\text{Mean absolute scaled error, MASE}      &=&
-    \text{mean}(|q_j|)
-\end{eqnarray*}
-
-
-## Evaluating Fits
-
-We run the accuracy metrics for both the Air Passenger and the Maine
-Unemployment data for the fits we ran.
-
-
-### Air Passenger Metrics
-
-We now calculate the evaluation metrics for the Air Passenger models.
-
-```{r calculate_ap_metrics, echo=TRUE}
+```r
 ap_ets_assess_tbl <- list(
   ewma    = ap_ewma_forecast,
   hw      = ap_hw_forecast,
@@ -217,59 +129,12 @@ ap_ets_assess_tbl <- list(
   autoets = ap_autoets_forecast
   ) %>%
   map(accuracy, x = ap_test_tbl$value) %>%
-  map(as_tibble, rownames = 'type') %>%
-  bind_rows(.id = 'model') %>%
-  arrange(type, model)
+  bind_rows(.id = 'model')
 
-ap_ets_assess_tbl %>% summary()
-```
-
-We plot the values.
-
-```{r plot_ap_metrics, echo=TRUE}
-plot_tbl <- ap_ets_assess_tbl %>%
-  gather('metric', 'value', -model, -type)
-  
-ggplot(plot_tbl) +
+ggplot(ap_ets_assess_tbl) +
   geom_col(aes(x = model, y = value, fill = type), position = 'dodge') +
   facet_wrap(~ metric, scales = 'free_y') +
-  xlab('Model') +
-  ylab('Metric') +
   ggtitle('Facet Plot for Air Passenger Forecast Metrics')
 ```
 
-
-
-### Maine Unemployment Metrics
-
-We repeat this process for the Maine Unemployment series.
-
-```{r calculate_maine_metrics, echo=TRUE}
-maine_ets_assess_tbl <- list(
-  ewma    = maine_ewma_forecast,
-  ewma    = maine_ewma_paramfit_forecast,
-  hw      = maine_hw_forecast,
-  hwmult  = maine_hwmult_forecast,
-  autoets = maine_autoets_forecast
-  ) %>%
-  map(accuracy, x = maine_test_tbl$value) %>%
-  map(as_tibble, rownames = 'type') %>%
-  bind_rows(.id = 'model') %>%
-  arrange(type, model)
-
-maine_ets_assess_tbl %>% summary()
-```
-
-We plot the values.
-
-```{r plot_maine_metrics, echo=TRUE}
-plot_tbl <- maine_ets_assess_tbl %>%
-  gather('metric', 'value', -model, -type)
-  
-ggplot(plot_tbl) +
-  geom_col(aes(x = model, y = value, fill = type), position = 'dodge') +
-  facet_wrap(~ metric, scales = 'free_y') +
-  xlab('Model') +
-  ylab('Metric') +
-  ggtitle('Facet Plot for Maine Unemployment Forecast Metrics')
-```
+The same procedure is repeated for the Maine Unemployment data.
