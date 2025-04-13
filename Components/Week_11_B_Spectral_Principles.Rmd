@@ -1,0 +1,370 @@
+### Spectrum Analysis - Basic Notation and Principles
+
+#### Key Topics:
+- **Frequency and Period**
+- **The General Structural Model**
+- **A Simple Example**
+- **Periodogram**
+- **The Problem of Leakage**
+- **Padding the Time Series**
+- **Tapering**
+- **Data Windows and Spectral Density Estimates**
+- **Preparing the Data for Analysis**
+- **Results When No Periodicity Exists**
+
+#### Additional References:
+For more details, refer to the "Time Series Analysis - Index" and related topics such as:
+- Identifying Patterns in Time Series Data  
+- ARIMA (Box & Jenkins) and Autocorrelations  
+- Interrupted Time Series  
+- Exponential Smoothing  
+- Seasonal Decomposition (Census I)  
+- X-11 Census Method II Seasonal Adjustment  
+- Distributed Lags Analysis  
+- Single Spectrum (Fourier) Analysis  
+- Cross-Spectrum Analysis  
+- Fast Fourier Transformations  
+
+---
+
+### Frequency and Period
+
+The frequency (denoted by ν or sometimes \( f \)) refers to the number of cycles a sine or cosine function completes per unit time. For instance, a post office handling fluctuations in mail delivery might experience 12 cycles per year due to monthly billing patterns. If the yearly analysis reveals 12 such cycles, then \( \nu \) equals 12. Other frequencies, such as yearly (\( \nu = 1 \)) or weekly (\( \nu = 52 \)), might also coexist.
+
+The period \( T \) represents the time required for one complete cycle and is the reciprocal of frequency: \( T = 1/\nu \). Using the mail example, the monthly cycle corresponds to \( T = 1/12 = 0.0833 \) years.
+
+---
+
+### The General Structural Model
+
+Spectrum analysis decomposes time series data into sinusoidal components of varying frequencies to identify dominant patterns. This can be treated as a Multiple Regression problem, where:
+
+\[
+x_t = a_0 + \sum_{k=1}^q [a_k \cdot \cos(k \cdot t) + b_k \cdot \sin(k \cdot t)]
+\]
+
+Here, \( \lambda \) represents frequency in radians, with \( \lambda = 2\pi k \). The regression coefficients \( a_k \) and \( b_k \) quantify the contribution of each sinusoidal function. The series is fully reconstructible using \( N/2 + 1 \) cosine functions and \( N/2 - 1 \) sine functions, assuming \( N \) data points.
+
+Spectrum analysis helps identify frequencies with strong periodicity based on large cosine or sine coefficients.
+
+---
+
+### Complex Numbers and Spectrum Analysis
+
+Many textbooks describe spectrum analysis using complex numbers, involving both real and imaginary parts. Complex numbers \( (3 + 2i) \), for instance, exist on a two-dimensional plane where arithmetic and geometric interpretations simplify computations. The use of Fourier transforms in such frameworks ensures both elegance and computational efficiency.
+
+---
+
+### A Simple Example
+
+To illustrate spectrum analysis, consider a 16-point time series defined by:
+
+\[
+x = 1 \cdot \cos(2\pi \cdot 0.0625 \cdot (v_0 - 1)) + 0.75 \cdot \sin(2\pi \cdot 0.2 \cdot (v_0 - 1))
+\]
+
+This series comprises two periodicities:
+- \( \nu = 0.0625 \) (period = 16 observations)  
+- \( \nu = 0.2 \) (period = 5 observations)
+
+The cosine coefficient (1.0) outweighs the sine coefficient (0.75). The spectrum analysis summary identifies these dominant frequencies, as reflected in the cosine and sine coefficients.
+
+--- 
+
+This revised version keeps the text concise, structured, and easy to follow while maintaining all important details. Let me know if further edits are needed!
+
+
+Frequency and Period
+
+The "wave length" of a sine or cosine function is typically expressed in terms of the number of cycles per unit time (Frequency), often denoted by the Greek letter nu ( ; some textbooks also use f). For example, the number of letters handled in a post office may show 12 cycles per year: On the first of every month a large amount of mail is sent (many bills come due on the first of the month), then the amount of mail decreases in the middle of the month, then it increases again towards the end of the month. Therefore, every month the fluctuation in the amount of mail handled by the post office will go through a full cycle. Thus, if the unit of analysis is one year, then n would be equal to 12, as there would be 12 cycles per year. Of course, there will likely be other cycles with different frequencies. For example, there might be annual cycles ( =1), and perhaps weekly cycles <(=52 weeks per year).
+
+The period T of a sine or cosine function is defined as the length of time required for one full cycle. Thus, it is the reciprocal of the frequency, or: T = 1/. To return to the mail example in the previous paragraph, the monthly cycle, expressed in yearly terms, would be equal to 1/12 = 0.0833. Put into words, there is a period in the series of length 0.0833 years.
+
+### The General Structural Model
+
+As mentioned before, the purpose of spectrum analysis is to decompose the original series into underlying sine and cosine functions of different frequencies, in order to determine those that appear particularly strong or important. One way to do so would be to cast the issue as a linear Multiple Regression problem, where the dependent variable is the observed time series, and the independent variables are the sine functions of all possible (discrete) frequencies. Such a linear multiple regression model can be written as:
+
+xt = a0 +  [ak*cos(k*t) + bk*sin(k*t)]    (for k = 1 to q)
+
+Following the common notation from classical harmonic analysis, in this equation  (lambda) is the frequency expressed in terms of radians per unit time, that is:  = 2**k, where  is the constant pi=3.14... and k = k/q. What is important here is to recognize that the computational problem of fitting sine and cosine functions of different lengths to the data can be considered in terms of multiple linear regression. Note that the cosine parameters ak and sine parameters bk are regression coefficients that tell us the degree to which the respective functions are correlated with the data. Overall there are qdifferent sine and cosine functions; intuitively (as also discussed in Multiple Regression), it should be clear that we cannot have more sine and cosine functions than there are data points in the series. Without going into detail, if there are N data points in the series, then there will be N/2+1 cosine functions and N/2-1 sine functions. In other words, there will be as many different sinusoidal waves as there are data points, and we will be able to completely reproduce the series from the underlying functions. (Note that if the number of cases in the series is odd, then the last data point will usually be ignored; in order for a sinusoidal function to be identified, you need at least two points: the high peak and the low peak.)
+
+To summarize, spectrum analysis will identify the correlation of sine and cosine functions of different frequency with the observed data. If a large correlation (sine or cosine coefficient) is identified, you can conclude that there is a strong periodicity of the respective frequency (or period) in the data.
+
+Complex numbers (real and imaginary numbers). In many textbooks on spectrum analysis, the structural model shown above is presented in terms of complex numbers, that is, the parameter estimation process is described in terms of the Fourier transform of a series into real and imaginary parts. Complex numbers are the superset that includes all real and imaginary numbers. Imaginary numbers, by definition, are numbers that are multiplied by the constant i, where i is defined as the square root of -1. Obviously, the square root of -1 does not exist, hence the term imaginary number; however, meaningful arithmetic operations on imaginary numbers can still be performed (e.g., [i*2]**2= -4). It is useful to think of real and imaginary numbers as forming a two dimensional plane, where the horizontal or X-axis represents all real numbers, and the vertical or Y-axis represents all imaginary numbers. Complex numbers can then be represented as points in the two- dimensional plane. For example, the complex number 3+i*2 can be represented by a point with coordinates {3,2} in this plane. You can also think of complex numbers as angles, for example, you can connect the point representing a complex number in the plane with the origin (complex number 0+i*0), and measure the angle of that vector to the horizontal line. Thus, intuitively you can see how the spectrum decomposition formula shown above, consisting of sine and cosine functions, can be rewritten in terms of operations on complex numbers. In fact, in this manner the mathematical discussion and required computations are often more elegant and easier to perform; which is why many textbooks prefer the presentation of spectrum analysis in terms of complex numbers.
+
+### A Simple Example
+
+Shumway (1988) presents a simple example to clarify the underlying "mechanics" of spectrum analysis. Let's create a series with 16 cases following the equation shown above, and then see how we may "extract" the information that was put in it. First, create a variable and define it as:
+
+x = 1*cos(2**.0625*(v0-1)) + .75*sin(2**.2*(v0-1))
+
+This variable is made up of two underlying periodicities: The first at the frequency of =.0625 (or period 1/=16; one observation completes 1/16'th of a full cycle, and a full cycle is completed every 16 observations) and the second at the frequency of =.2 (or period of 5). The cosine coefficient (1.0) is larger than the sine coefficient (.75). The spectrum analysis summary is shown below.
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+
+Spectral analysis:VAR1 (shumex.sta)
+
+No. of cases: 16
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+t
+ 
+
+Freq-
+
+uency
+ 
+
+ 
+
+Period
+ 
+
+Cosine
+
+Coeffs
+ 
+
+Sine
+
+Coeffs
+ 
+
+Period-
+
+ogram
+ 
+
+
+
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+ 
+
+.0000
+
+.0625
+
+.1250
+
+.1875
+
+.2500
+
+.3125
+
+.3750
+
+.4375
+
+.5000
+ 
+
+ 
+
+16.00
+
+8.00
+
+5.33
+
+4.00
+
+3.20
+
+2.67
+
+2.29
+
+2.00
+ 
+
+.000
+
+1.006
+
+.033
+
+.374
+
+-.144
+
+-.089
+
+-.075
+
+-.070
+
+-.068
+ 
+
+0.000
+
+.028
+
+.079
+
+.559
+
+-.144
+
+-.060
+
+-.031
+
+-.014
+
+0.000
+ 
+
+.000
+
+8.095 
+
+.059 
+
+3.617 
+
+.333 
+
+.092 
+
+.053 
+
+.040 
+
+.037
+ 
+
+
+Let's now review the columns. Clearly, the largest cosine coefficient can be found for the .0625 frequency. A smaller sine coefficient can be found at frequency = .1875. Thus, clearly the two sine/cosine frequencies which were "inserted" into the example data file are reflected in the above table.
+
+
+### Periodogram
+
+The sine and cosine functions are mutually independent (or orthogonal); thus we may sum the squared coefficients for each frequency to obtain theperiodogram. Specifically, the periodogram values above are computed as:
+
+Pk = sine coefficientk2 + cosine coefficientk2 * N/2
+
+where Pk is the periodogram value at frequency k and N is the overall length of the series. The periodogram values can be interpreted in terms of variance (sums of squares) of the data at the respective frequency or period. Customarily, the periodogram values are plotted against the frequencies or periods.
+
+
+
+The Problem of Leakage
+
+In the example above, a sine function with a frequency of 0.2 was "inserted" into the series. However, because of the length of the series (16), none of the frequencies reported exactly "hits" on that frequency. In practice, what often happens in those cases is that the respective frequency will "leak" into adjacent frequencies. For example, you may find large periodogram values for two adjacent frequencies, when, in fact, there is only one strong underlying sine or cosine function at a frequency that falls in-between those implied by the length of the series. There are three ways in which we can approach the problem of leakage:
+•
+By padding the series, we may apply a finer frequency "roster" to the data,
+
+•
+By tapering the series prior to the analysis, we may reduce leakage, or
+
+•
+By smoothing the periodogram, we may identify the general frequency "regions" or (spectral densities) that significantly contribute to the cyclical behavior of the series.
+
+
+See below for descriptions of each of these approaches.
+
+Padding the Time Series
+
+Because the frequency values are computed as N/t (the number of units of times), we can simply pad the series with a constant (e.g., zeros) and thereby introduce smaller increments in the frequency values. In a sense, padding allows us to apply a finer roster to the data. In fact, if we padded the example data file described in the example above with ten zeros, the results would not change, that is, the largest periodogram peaks would still occur at the frequency values closest to .0625 and .2. (Padding is also often desirable for computational efficiency reasons; see below.)
+
+Tapering
+
+The so-called process of split-cosine-bell tapering is a recommended transformation of the series prior to the spectrum analysis. It usually leads to a reduction of leakage in the periodogram. The rationale for this transformation is explained in detail in Bloomfield (1976, p. 80-94). In essence, a proportion (p) of the data at the beginning and at the end of the series is transformed via multiplication by the weights:
+
+wt = 0.5*{1-cos[*(t - 0.5)/m]}     (for t=0 to m-1)
+
+wt = 0.5*{1-cos[*(N - t + 0.5)/m]}     (for t=N-m to N-1)
+
+where m is chosen so that 2*m/N is equal to the proportion of data to be tapered (p).
+
+Data Windows and Spectral Density Estimates
+
+In practice, when analyzing actual data, it is usually not of crucial importance to identify exactly the frequencies for particular underlying sine or cosine functions. Rather, because the periodogram values are subject to substantial random fluctuation, we are faced with the problem of very many "chaotic" periodogram spikes. In that case, we want to find the frequencies with the greatest spectral densities, that is, the frequency regions, consisting of many adjacent frequencies, that contribute most to the overall periodic behavior of the series. This can be accomplished by smoothing the periodogram values via a weighted moving average transformation. Suppose the moving average window is of width m (which must be an odd number); the following are the most commonly used smoothers (note: p = (m-1)/2).
+
+Daniell (or equal weight) window. The Daniell window (Daniell 1946) amounts to a simple (equal weight) moving average transformation of the periodogram values, that is, each spectral density estimate is computed as the mean of the m/2 preceding and subsequent periodogram values.
+
+Tukey window. In the Tukey (Blackman and Tukey, 1958) or Tukey-Hanning window (named after Julius Von Hann), for each frequency, the weights for the weighted moving average of the periodogram values are computed as:
+
+wj = 0.5 + 0.5*cos(*j/p)    (for j=0 to p)
+
+w-j = wj    (for j  0)
+
+Hamming window. In the Hamming (named after R. W. Hamming) window or Tukey-Hamming window (Blackman and Tukey, 1958), for each frequency, the weights for the weighted moving average of the periodogram values are computed as:
+
+wj = 0.54 + 0.46*cos(*j/p)    (for j=0 to p)
+
+w-j = wj    (for j  0)
+
+Parzen window. In the Parzen window (Parzen, 1961), for each frequency, the weights for the weighted moving average of the periodogram values are computed as:
+
+wj = 1-6*(j/p)2 + 6*(j/p)3    (for j = 0 to p/2)
+
+wj = 2*(1-j/p)3    (for j = p/2 + 1 to p)
+
+w-j = wj    (for j  0)
+
+Bartlett window. In the Bartlett window (Bartlett, 1950) the weights are computed as:
+
+wj = 1-(j/p)    (for j = 0 to p)
+
+w-j = wj    (for j  0)
+
+With the exception of the Daniell window, all weight functions will assign the greatest weight to the observation being smoothed in the center of the window, and increasingly smaller weights to values that are further away from the center. In many cases, all of these data windows will produce very similar results.
+
+Preparing the Data for Analysis
+
+Let's now consider a few other practical points in spectrum analysis. Usually, we want to subtract the mean from the series, and detrend the series (so that it is stationary) prior to the analysis. Otherwise the periodogram and density spectrum will mostly be "overwhelmed" by a very large value for the first cosine coefficient (for frequency 0.0). In a sense, the mean is a cycle of frequency 0 (zero) per unit time; that is, it is a constant. Similarly, a trend is also of little interest when we want to uncover the periodicities in the series. In fact, both of those potentially strong effects may mask the more interesting periodicities in the data, and thus both the mean and the trend (linear) should be removed from the series prior to the analysis. Sometimes, it is also useful to smooth the data prior to the analysis, in order to "tame" the random noise that may obscure meaningful periodic cycles in the periodogram.
+
+Results when No Periodicity in the Series Exists
+
+Finally, what if there are no recurring cycles in the data, that is, if each observation is completely independent of all other observations? If the distribution of the observations follows the normal distribution, such a time series is also referred to as a white noise series (like the white noise you hear on the radio when tuned in-between stations). A white noise input series will result in periodogram values that follow an exponential distribution. Thus, by testing the distribution of periodogram values against the exponential distribution, you can test whether the input series is different from a white noise series. In addition, then you can also request to compute the Kolmogorov-Smirnov one-sample d statistic (see also Nonparametrics and Distributions for more details).
+
+Testing for white noise in certain frequency bands. Note that you can also plot the periodogram values for a particular frequency range only. Again, if the input is a white noise series with respect to those frequencies (i.e., it there are no significant periodic cycles of those frequencies), then the distribution of the periodogram values should again follow an exponential distribution.
+
+
