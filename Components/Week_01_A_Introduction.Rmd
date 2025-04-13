@@ -1,0 +1,31 @@
+**Time Series Analysis**
+
+Time series analysis involves examining sequences of measurements recorded at equally spaced intervals, aiming to uncover meaningful patterns and forecast future values. The following topics will guide through identifying and modeling these patterns.
+
+### Key Topics:
+1. **General Introduction**  
+   - An overview of time series data characteristics and the analytical techniques designed to explore them.
+   
+2. **Two Main Goals**  
+   - Identifying the underlying structure of observed data.  
+   - Developing forecasts based on established patterns.
+
+3. **Identifying Patterns**  
+   - Distinguishing systematic patterns from random noise.  
+   - Trend analysis and seasonal patterns.
+
+4. **ARIMA (Box & Jenkins)**  
+   - Core methodologies for modeling time series, including parameter estimation and evaluation.
+
+5. **Seasonal Decomposition**  
+   - Methods for isolating seasonal components, such as Census I and X-11 seasonal adjustment techniques.
+
+6. **Spectrum Analysis**  
+   - Examining frequency-based properties of time series using techniques like Fourier transformations.  
+   - Addressing practical issues such as leakage and tapering.
+
+7. **Distributed Lags and Interrupted Time Series**  
+   - Models for analyzing lag effects and interruptions in time series patterns.
+
+For detailed methodologies, examples, and foundational references, consult works by Anderson (1976), Box and Jenkins (1976), Kendall (1984), Montgomery et al. (1990), and Wei (1989).
+
