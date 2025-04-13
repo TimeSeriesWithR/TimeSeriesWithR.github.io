@@ -2,6 +2,31 @@
 #### Worksheet Exercise 6.4
 ###
 
+
+The provided R code performs the following:
+
+### Code Explanation
+
+1. **Set Random Seed (`set.seed(42);`)**  
+   - Ensures reproducibility by initializing the random number generator with a specific seed (42 in this case).
+
+2. **Simulate an AR(1) Time Series (`arima.sim(...)`)**  
+   - Simulates a time series using an Autoregressive (AR) model of order 1:
+     - `order = c(1, 0, 0)` indicates an AR(1) model with no differencing or moving average terms.
+     - `ar = 0.5` specifies the AR coefficient (\( \phi = 0.5 \)), meaning each value in the series depends partly on the previous value with a coefficient of 0.5.
+     - `n = 1000` generates 1,000 observations for the time series.
+     - `start.innov = 1` initializes the starting innovation (the random shock) as 1.
+     - `n.start = 1` uses one starting observation.
+
+   The simulated series (`ar1.ts`) will contain 1,000 values based on these parameters.
+
+3. **Plot the Simulated Series (`plot(ar1.ts);`)**  
+   - Visualizes the generated time series. The plot shows:
+     - The x-axis: Time indices (1 to 1,000).
+     - The y-axis: Values of the simulated AR(1) process.
+   - Given \( \phi = 0.5 \), the series will exhibit autocorrelation—each value is partially dependent on its predecessor. Additionally, the random shocks introduce variation around the trend.
+
+The result is a time series plot displaying how the AR(1) model evolves over the specified number of observations. The pattern will appear smooth with dependency between consecutive points but with a stochastic component. Let me know if you'd like further insights into interpreting the plot!
 ```{r}
 
 set.seed(42);
