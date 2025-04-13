@@ -1,0 +1,67 @@
+Here’s a tidied and well-structured version of your provided text for better clarity:
+
+---
+
+### Interrupted Time Series ARIMA
+
+A common research question in time series analysis is whether an external event influenced subsequent observations. Examples include evaluating whether a new economic policy improved economic performance or whether an anti-crime law impacted crime rates. Interrupted Time Series (ITS) analysis allows researchers to assess the impact of such discrete events on time series values. This method is detailed in McDowall, McCleary, Meidinger, & Hay (1980), who identify three primary types of potential impacts:
+1. **Permanent Abrupt**: Immediate and lasting change.  
+2. **Permanent Gradual**: Change occurs gradually but remains permanent.  
+3. **Abrupt Temporary**: Immediate but short-lived change.  
+
+For related methodologies, see:
+- Distributed Lags Analysis  
+- Single Spectrum (Fourier) Analysis  
+- Cross-Spectrum Analysis  
+- Basic Notations and Principles  
+- Fast Fourier Transformations  
+
+---
+
+### Classical Seasonal Decomposition (Census Method I)
+
+#### General Introduction
+Seasonal decomposition isolates components within time series data, such as long-term trends, seasonal effects, and random variability. For instance, analyzing 12 years of monthly international flight passenger loads may reveal:
+1. A linear upward trend over time.  
+2. Seasonality, with peaks during summer months and December holidays.  
+
+The Census I method, detailed in Makridakis, Wheelwright, and McGee (1983), and Makridakis and Wheelwright (1989), decomposes time series data into the following components:
+1. **Seasonal Component (St)**: Regular fluctuations within fixed intervals.  
+2. **Trend Component (Tt)**: Long-term increase or decrease.  
+3. **Cyclical Component (Ct)**: Irregular fluctuations of varying length.  
+4. **Irregular Component (It)**: Random noise or variability.
+
+In this method, the trend and cyclical components are often combined into a **trend-cycle (TCt)**. The decomposition can follow two models:
+- **Additive**: \( X_t = TC_t + S_t + I_t \)  
+- **Multiplicative**: \( X_t = T_t \cdot C_t \cdot S_t \cdot I_t \)
+
+---
+
+### Seasonal Components: Additive vs. Multiplicative
+
+Seasonality can be either additive or multiplicative:  
+- **Additive Seasonality**: The absolute change remains constant (e.g., toy sales increase by $3 million every December).  
+- **Multiplicative Seasonality**: The change is proportional (e.g., toy sales increase by 40%, so stronger baseline sales result in a higher absolute increase).
+
+Similarly, trends can also be additive or multiplicative, reflecting steady or proportional growth. Cyclical components differ from seasonal ones in their irregular intervals and longer durations.
+
+---
+
+### Computations in Seasonal Decomposition (Census I)
+
+1. **Moving Average**:  
+   - Compute the moving average over one seasonal cycle (e.g., 12 months). If the cycle length is even, either equal or unequal weights can be applied.  
+2. **Ratios or Differences**:  
+   - Isolate the seasonal component by subtracting (additive models) or dividing (multiplicative models) the moving average from the observed series.  
+3. **Seasonal Components**:  
+   - Compute the average (additive) or medial average (multiplicative) of values for each seasonal point.  
+4. **Seasonally Adjusted Series**:  
+   - Remove seasonality by subtracting (additive) or dividing (multiplicative) the seasonal component from the original series.  
+5. **Trend-Cycle Component**:  
+   - Apply a 5-point centered weighted moving average to smooth the seasonally adjusted series.  
+6. **Random or Irregular Component**:  
+   - Isolate this by subtracting (additive) or dividing (multiplicative) the trend-cycle component from the seasonally adjusted series.
+
+---
+
+This streamlined version retains all crucial details, presenting the content clearly and logically. Let me know if further adjustments are needed!
